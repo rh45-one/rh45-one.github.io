@@ -17,6 +17,6 @@
   <img src="https://github-readme-stats.vercel.app/api?username=rh45-one&show_icons=true" />
 </picture>
 <br/>
-<hr/>
+</h1>
 
 <br/>
