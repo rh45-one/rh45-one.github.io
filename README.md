@@ -17,11 +17,6 @@
   <img src="https://github-readme-stats.vercel.app/api?username=rh45-one&show_icons=true" />
 </picture>
 <br/>
-  <a href="https://git.io/streak-stats"><img src="https://streak-stats.demolab.com?user=rh45-one&theme=tokyonight&hide_border=true&date_format=j%20M%5B%20Y%5D&hide_current_streak=true&hide_longest_streak=true" alt="GitHub Streak" /></a>
-
-
-<br/><br/>
-
 <hr/>
 
 <br/>
