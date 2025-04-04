@@ -3,6 +3,21 @@
  * This ensures all HTML elements are available for manipulation
  */
 document.addEventListener('DOMContentLoaded', function() {
+    // Load marked.js for Markdown parsing if not already loaded
+    if (typeof marked === 'undefined') {
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/marked/marked.min.js';
+        script.onload = initializeAfterDependencies;
+        document.head.appendChild(script);
+    } else {
+        initializeAfterDependencies();
+    }
+});
+
+/**
+ * Initialize the application after all dependencies are loaded
+ */
+function initializeAfterDependencies() {
     /**
      * Load the global header from header.html
      * Using the Fetch API to make an asynchronous request to the server
@@ -16,13 +31,56 @@ document.addEventListener('DOMContentLoaded', function() {
             // After header is successfully loaded, initialize PJAX navigation
             // This ensures navigation handlers are set up after header links exist
             setupPjaxNavigation();
+            highlightCurrentPage();
         });
         
     // Add loading indicator to the DOM
     const loadingIndicator = document.createElement('div');
     loadingIndicator.className = 'loading-indicator';
     document.body.appendChild(loadingIndicator);
-});
+
+    // Check if current page should load markdown content
+    const currentPath = window.location.pathname;
+    if (currentPath === '/categories/' || currentPath === '/categories') {
+        loadMarkdownContent('/content/categories.md');
+    }
+}
+
+/**
+ * Loads and renders Markdown content from a local file or URL
+ * @param {string} markdownPath - Path to the markdown file
+ */
+function loadMarkdownContent(markdownPath) {
+    fetch(markdownPath)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.text();
+        })
+        .then(markdown => {
+            // Parse the markdown to HTML
+            const html = marked.parse(markdown);
+            
+            // Find the content container - update to target the markdown-content class
+            const contentElement = document.querySelector('.markdown-content');
+            if (contentElement) {
+                // Replace the content
+                contentElement.innerHTML = html;
+            } else {
+                // Fallback to .posts if .markdown-content doesn't exist
+                const postsElement = document.querySelector('.posts');
+                if (postsElement) {
+                    postsElement.innerHTML = html;
+                } else {
+                    console.error('Content element not found for Markdown insertion');
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error loading Markdown content:', error);
+        });
+}
 
 /**
  * Sets up PJAX (pushState + AJAX) navigation
@@ -58,8 +116,12 @@ function setupPjaxNavigation() {
             
             // Short delay to ensure transition is visible
             setTimeout(() => {
-                // Load the new page content without refreshing
-                loadPage(href);
+                // Check if this is a Markdown page
+                if (href === '/categories/' || href === '/categories') {
+                    loadPage(href, true);
+                } else {
+                    loadPage(href, false);
+                }
             }, 50);
         });
     });
@@ -73,9 +135,12 @@ function setupPjaxNavigation() {
         document.body.classList.add('page-transition');
         document.body.classList.add('loading');
         
+        const currentPath = window.location.pathname;
+        const isMarkdownPage = (currentPath === '/categories/' || currentPath === '/categories');
+        
         // Load the page content for the current URL shown in the address bar
         setTimeout(() => {
-            loadPage(window.location.pathname);
+            loadPage(currentPath, isMarkdownPage);
         }, 50);
     });
 }
@@ -83,8 +148,9 @@ function setupPjaxNavigation() {
 /**
  * Fetches and loads page content without full page refresh
  * @param {string} url - The URL of the page to load
+ * @param {boolean} isMarkdownPage - Whether this page should load markdown content
  */
-function loadPage(url) {
+function loadPage(url, isMarkdownPage) {
     // Set a failsafe timeout to ensure loading state is always cleared
     const failsafeTimer = setTimeout(() => {
         document.body.classList.remove('page-transition');
@@ -114,6 +180,11 @@ function loadPage(url) {
             // Replace only the inner HTML of the content area to preserve structure
             if (newContent && currentContent) {
                 currentContent.innerHTML = newContent.innerHTML;
+                
+                // If this is a markdown page, load the markdown content
+                if (isMarkdownPage) {
+                    loadMarkdownContent('/content/categories.md');
+                }
             } else {
                 console.warn('Content elements not found', 
                              { newContentFound: !!newContent, 
