@@ -85,9 +85,21 @@ function setupPjaxNavigation() {
  * @param {string} url - The URL of the page to load
  */
 function loadPage(url) {
+    // Set a failsafe timeout to ensure loading state is always cleared
+    const failsafeTimer = setTimeout(() => {
+        document.body.classList.remove('page-transition');
+        document.body.classList.remove('loading');
+        console.log('Failsafe: cleared loading state');
+    }, 2000);
+    
     // Fetch the HTML content from the target URL
     fetch(url)
-        .then(response => response.text())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.text();
+        })
         .then(html => {
             // Create a DOM parser to convert the raw HTML text into a document object
             const parser = new DOMParser();
@@ -102,6 +114,10 @@ function loadPage(url) {
             // Replace only the inner HTML of the content area to preserve structure
             if (newContent && currentContent) {
                 currentContent.innerHTML = newContent.innerHTML;
+            } else {
+                console.warn('Content elements not found', 
+                             { newContentFound: !!newContent, 
+                               currentContentFound: !!currentContent });
             }
             
             // Update the document title
@@ -120,10 +136,59 @@ function loadPage(url) {
             // Highlight current page in navigation
             highlightCurrentPage();
             
+            // Clear the failsafe timer as we've completed successfully
+            clearTimeout(failsafeTimer);
+            
             // Remove transition classes
             setTimeout(() => {
                 document.body.classList.remove('page-transition');
                 document.body.classList.remove('loading');
             }, 200);
+        })
+        .catch(error => {
+            // Log any errors that occur
+            console.error('Error during page navigation:', error);
+            
+            // Ensure we still remove loading classes even if there's an error
+            document.body.classList.remove('page-transition');
+            document.body.classList.remove('loading');
+            
+            // Clear the failsafe timer
+            clearTimeout(failsafeTimer);
         });
+}
+
+/**
+ * Highlight the current page link in the navigation
+ * This adds the 'active' class to the link that matches the current URL
+ */
+function highlightCurrentPage() {
+    try {
+        // Get the current path from the URL
+        const currentPath = window.location.pathname;
+        
+        // Find all navigation links
+        const navLinks = document.querySelectorAll('.nav-link');
+        
+        // Loop through each link
+        navLinks.forEach(link => {
+            // Get the path from the link's href
+            const linkPath = link.getAttribute('href');
+            
+            // Check if the current path matches the link's path
+            if (
+                (currentPath === linkPath) || 
+                (currentPath === '/' && linkPath === '/') ||
+                (currentPath.includes(link.getAttribute('data-page')))
+            ) {
+                // Add the active class to this link
+                link.classList.add('active');
+            } else {
+                // Remove the active class from other links
+                link.classList.remove('active');
+            }
+        });
+    } catch (error) {
+        console.error('Error in highlightCurrentPage:', error);
+    }
 }
