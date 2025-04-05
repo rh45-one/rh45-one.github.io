@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>rh45 | Projects</title>
+    <link rel="stylesheet" href="/main.css" crossorigin="anonymous">  
+    <link rel="stylesheet" href="/page-transitions.css">
+    <link rel="stylesheet" href="/css/markdown.css">
+    
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="">
+    <link rel="shortcut icon" href="/favicon.ico">
+</head>
+<body>
+    <div id="header-container"></div>
+    
+    <div class="container">
+        <div class="content">
+            <main>
+                <div class="posts">
+                    <!-- This div will be replaced with Markdown content -->
+                    <div class="markdown-content">
+                        <h1>Project Index</h1>
+                        <p>Loading content...</p>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <footer class="footer">
+        </footer>
+    </div>
+
+    <!-- Add the marked.js library for Markdown parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
+    <script src="/bundle.min.63972eebb318ba4bd9f4d416d5f984dd9c689d8f0245717879a6f8e3fb26dc2d976201d764db0163c2fdd5325efdb2f32b79c054159349917c5ae5e7ac92ac25.js" integrity="sha512-Y5cu67MYukvZ9NQW1fmE3ZxonY8CRXF4eab44/sm3C2XYgHXZNsBY8L91TJe/bLzK3nAVBWTSZF8WuXnrJKsJQ=="></script>
+    <script src="/script.js"></script>
+    <script>
+        // Load markdown content after page is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            loadMarkdownContent('/markdown/projects.md');  // Added leading slash
+        });
+    </script>
+</body>
+</html>

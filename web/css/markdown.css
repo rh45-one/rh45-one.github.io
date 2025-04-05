@@ -1,0 +1,105 @@
+/* Markdown Content Styling
+-------------------------------------------------- */
+
+/* Heading styles */
+.markdown-content h1, 
+.markdown-content h2,
+.markdown-content h3,
+.markdown-content h4,
+.markdown-content h5,
+.markdown-content h6 {
+    color: #fff; /* Ensure headings are white */
+}
+
+.markdown-content h1 {
+    margin-top: 0.5em;
+    margin-bottom: 0.8em;
+}
+
+.markdown-content h2 {
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+    border-bottom: 1px solid #eaeaea;
+    padding-bottom: 0.2em;
+}
+
+/* Fix bold text color to match normal text */
+.markdown-content strong {
+    color: inherit; /* Inherit the color from parent instead of being white */
+}
+
+/* List styling */
+.markdown-content ul {
+    list-style-type: disc;
+    padding-left: 2em;
+    margin: 1em 0;
+}
+
+/* Paragraph styling */
+.markdown-content p {
+    margin: 1em 0;
+    line-height: 1.6;
+}
+
+/* Horizontal rule */
+.markdown-content hr {
+    margin: 2em 0;
+}
+
+/* GitHub-style code blocks */
+.markdown-content pre {
+    background-color: #f6f8fa;
+    border-radius: 6px;
+    padding: 16px;
+    overflow: auto;
+    font-size: 85%;
+    line-height: 1.45;
+    border: 1px solid #e1e4e8;
+    margin-bottom: 16px;
+}
+
+/* Inline code styling */
+.markdown-content code {
+    background-color: rgba(27, 31, 35, 0.05);
+    border-radius: 3px;
+    font-size: 85%;
+    margin: 0;
+    padding: 0.2em 0.4em;
+}
+
+/* Remove background from code inside pre (code blocks) */
+.markdown-content pre code {
+    background-color: transparent;
+    padding: 0;
+    margin: 0;
+    font-size: 100%;
+    word-break: normal;
+    white-space: pre;
+    overflow: visible;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .markdown-content h2 {
+        border-bottom-color: #3b3d42;
+    }
+    
+    /* Ensure consistent text color in dark mode */
+    .markdown-content {
+        color: #dcddde; /* Light gray color for dark mode text */
+    }
+    
+    .markdown-content strong {
+        color: inherit;
+    }
+    
+    /* Dark mode for code blocks */
+    .markdown-content pre {
+        background-color: #161b22;
+        border-color: #30363d;
+    }
+    
+    .markdown-content code {
+        background-color: rgba(240, 246, 252, 0.15);
+    }
+}

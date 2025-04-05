@@ -1,0 +1,44 @@
+/* Social Media Icons 
+-------------------------------------------------- */
+
+.social-icons {
+    display: flex;
+    flex-direction: row; /* Make sure icons are in a row */
+    align-items: center;
+    margin-left: 15px;
+}
+
+.social-icon {
+    width: 18px; /* Match text size in navbar */
+    height: 18px;
+    margin: 0 8px;
+    opacity: 0.8;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    object-fit: contain; /* Maintain aspect ratio */
+}
+
+.social-icon:hover {
+    opacity: 1;
+    transform: translateY(-1px);
+}
+
+/* Make sure the navigation links and social icons align properly */
+.header__right {
+    display: flex;
+    flex-direction: row; /* Ensure horizontal layout */
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Responsive adjustments for mobile */
+@media (max-width: 684px) {
+    .social-icons {
+        margin-left: 10px;
+    }
+    
+    .social-icon {
+        width: 16px;
+        height: 16px;
+        margin: 0 5px;
+    }
+}
