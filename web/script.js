@@ -51,34 +51,54 @@ function initializeAfterDependencies() {
  * @param {string} markdownPath - Path to the markdown file
  */
 function loadMarkdownContent(markdownPath) {
+    // Show loading indicator in the markdown content area
+    const contentElement = document.querySelector('.markdown-content');
+    if (contentElement) {
+        contentElement.innerHTML = '<h1>Loading Content</h1><p>Please wait...</p>';
+    }
+    
+    console.log('Fetching markdown from:', markdownPath);
+    
     fetch(markdownPath)
         .then(response => {
+            console.log('Markdown fetch response status:', response.status);
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
             return response.text();
         })
         .then(markdown => {
+            console.log('Markdown content loaded successfully, length:', markdown.length);
+            
             // Parse the markdown to HTML
             const html = marked.parse(markdown);
             
-            // Find the content container - update to target the markdown-content class
-            const contentElement = document.querySelector('.markdown-content');
+            // Find the content container
             if (contentElement) {
                 // Replace the content
                 contentElement.innerHTML = html;
+                console.log('Markdown rendered to HTML');
             } else {
                 // Fallback to .posts if .markdown-content doesn't exist
                 const postsElement = document.querySelector('.posts');
                 if (postsElement) {
                     postsElement.innerHTML = html;
+                    console.log('Markdown rendered to posts container (fallback)');
                 } else {
                     console.error('Content element not found for Markdown insertion');
                 }
             }
         })
         .catch(error => {
-            console.error('Error loading Markdown content:', error);
+            console.error('Error loading Markdown content:', error, 'Path was:', markdownPath);
+            if (contentElement) {
+                contentElement.innerHTML = `
+                    <h1>Error</h1>
+                    <p>Failed to load content from: ${markdownPath}</p>
+                    <p>Error: ${error.message}</p>
+                    <p>Please check the console for more details.</p>
+                `;
+            }
         });
 }
 
@@ -117,7 +137,7 @@ function setupPjaxNavigation() {
             // Short delay to ensure transition is visible
             setTimeout(() => {
                 // Check if this is a Markdown page
-                if (href === '/categories/' || href === '/categories') {
+                if (href === '/projects/' || href === '/projects') {
                     loadPage(href, true);
                 } else {
                     loadPage(href, false);
@@ -177,13 +197,39 @@ function loadPage(url, isMarkdownPage) {
             // Get the current content element
             const currentContent = document.querySelector('.content');
             
+            // Extract the markdown URL from the original page if it exists
+            let markdownUrl = null;
+            const scriptTags = doc.querySelectorAll('script');
+            scriptTags.forEach(script => {
+                const scriptContent = script.textContent;
+                if (scriptContent && scriptContent.includes('loadMarkdownContent')) {
+                    const match = scriptContent.match(/loadMarkdownContent\(['"]([^'"]+)['"]\)/);
+                    if (match && match[1]) {
+                        markdownUrl = match[1];
+                        console.log('Found markdown URL in page:', markdownUrl);
+                    }
+                }
+            });
+            
             // Replace only the inner HTML of the content area to preserve structure
             if (newContent && currentContent) {
                 currentContent.innerHTML = newContent.innerHTML;
                 
-                // If this is a markdown page, load the markdown content
-                if (isMarkdownPage) {
-                    loadMarkdownContent('/content/categories.md');
+                // Check for markdown content on this page
+                if (markdownUrl) {
+                    console.log('Loading markdown from extracted URL:', markdownUrl);
+                    loadMarkdownContent(markdownUrl);
+                } 
+                else if (isMarkdownPage || url.includes('/projects') || url.includes('/categories')) {
+                    // Determine which markdown file to load based on the URL
+                    let mdPath = '/content/categories.md';
+                    
+                    if (url.includes('/projects')) {
+                        mdPath = '/markdown/projects.md';  // This matches the path in the HTML file
+                    }
+                    
+                    console.log('Loading markdown based on URL path:', mdPath);
+                    loadMarkdownContent(mdPath);
                 }
             } else {
                 console.warn('Content elements not found', 
