@@ -2,6 +2,8 @@
 
 Welcome to my project showcase. Here you'll find a collection of my work across various domains including 3D printing, electronics, cybersecurity, and homelab setups.
 
+---
+
 ## Software
 
 #### [3D Print Cost Calculator](/projects/3dpcc)
