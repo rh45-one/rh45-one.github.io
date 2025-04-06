@@ -70,13 +70,6 @@ Uses EPS-NOW to connect two ESP32s. Pressing a button on one triggers a vibratio
 **Technologies:** Arduino  
 **Status:** Beta | Archived
 
-#### [DTMF Message Encryption](https://github.com/rh45-one/DTMF-Encryption)
-
-This project aims to transmit text messages using DTMF tones encrypted using a dynamic key. These tones will be transmitted using PMR446 radios (no HAM licence required) and will provide a legal and secure off-grid method of communication.
-
-**Technologies:** Python  
-**Status:** Incomplete | Archived
-
 ---
 
 *Last updated: April 2025*
