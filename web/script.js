@@ -70,6 +70,9 @@ function initializeAfterDependencies() {
  * @param {string} markdownPath - Path to the markdown file
  */
 function loadMarkdownContent(markdownPath) {
+    // Ensure Markdown CSS is loaded
+    ensureMarkdownCssIsLoaded();
+    
     // Add cache busting parameter to markdown URLs
     const cacheBustedPath = markdownPath.includes('?') 
         ? markdownPath + '&cb=' + generateCacheBuster()
@@ -94,6 +97,15 @@ function loadMarkdownContent(markdownPath) {
         .then(markdown => {
             console.log('Markdown content loaded successfully, length:', markdown.length);
             
+            // Configure marked.js to use GitHub-flavored Markdown
+            marked.setOptions({
+                gfm: true,
+                breaks: true,
+                headerIds: true,
+                pedantic: false,
+                smartLists: true
+            });
+            
             // Parse the markdown to HTML
             const html = marked.parse(markdown);
             
@@ -102,12 +114,19 @@ function loadMarkdownContent(markdownPath) {
                 // Replace the content
                 contentElement.innerHTML = html;
                 console.log('Markdown rendered to HTML');
+                
+                // Apply direct styling to fix common issues
+                applyMarkdownStyling(contentElement);
             } else {
                 // Fallback to .posts if .markdown-content doesn't exist
                 const postsElement = document.querySelector('.posts');
                 if (postsElement) {
-                    postsElement.innerHTML = html;
+                    // Create a markdown-content container to ensure styles apply
+                    postsElement.innerHTML = '<div class="markdown-content">' + html + '</div>';
                     console.log('Markdown rendered to posts container (fallback)');
+                    
+                    // Apply direct styling to fix common issues
+                    applyMarkdownStyling(document.querySelector('.markdown-content'));
                 } else {
                     console.error('Content element not found for Markdown insertion');
                 }
@@ -124,6 +143,84 @@ function loadMarkdownContent(markdownPath) {
                 `;
             }
         });
+}
+
+/**
+ * Ensures that the markdown CSS file is loaded
+ */
+function ensureMarkdownCssIsLoaded() {
+    const markdownCssPath = '/css/markdown.css';
+    
+    // Check if the CSS is already loaded
+    const isCssLoaded = Array.from(document.styleSheets).some(sheet => {
+        return sheet.href && sheet.href.includes('markdown.css');
+    });
+    
+    // If not loaded, add it dynamically
+    if (!isCssLoaded) {
+        console.log('Adding markdown CSS to document');
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = markdownCssPath + '?v=' + generateCacheBuster();
+        document.head.appendChild(link);
+    } else {
+        // Reload it with a new cache buster
+        const existingLinks = document.querySelectorAll('link[href*="markdown.css"]');
+        existingLinks.forEach(link => {
+            const newHref = markdownCssPath + '?v=' + generateCacheBuster();
+            if (link.href !== newHref) {
+                link.href = newHref;
+            }
+        });
+    }
+}
+
+/**
+ * Applies critical styling directly to markdown elements as a fallback
+ * @param {HTMLElement} container - The container with markdown content
+ */
+function applyMarkdownStyling(container) {
+    if (!container) return;
+    
+    // Fix headings
+    container.querySelectorAll('h1, h2, h3, h4, h5, h6').forEach(heading => {
+        heading.style.color = '#fff';
+    });
+    
+    // Fix bold text
+    container.querySelectorAll('strong').forEach(element => {
+        element.style.color = 'inherit';
+    });
+    
+    // Fix code blocks
+    container.querySelectorAll('pre').forEach(block => {
+        block.style.backgroundColor = '#161b22';
+        block.style.borderRadius = '6px';
+        block.style.padding = '16px';
+        block.style.overflow = 'auto';
+        block.style.fontSize = '85%';
+        block.style.lineHeight = '1.45';
+        block.style.border = '1px solid #30363d';
+        block.style.marginBottom = '16px';
+    });
+    
+    // Fix inline code
+    container.querySelectorAll('code:not(pre code)').forEach(code => {
+        code.style.backgroundColor = 'rgba(240, 246, 252, 0.15)';
+        code.style.borderRadius = '3px';
+        code.style.fontSize = '85%';
+        code.style.padding = '0.2em 0.4em';
+    });
+    
+    // Fix code within pre blocks
+    container.querySelectorAll('pre code').forEach(code => {
+        code.style.backgroundColor = 'transparent';
+        code.style.padding = '0';
+        code.style.margin = '0';
+        code.style.fontSize = '100%';
+        code.style.whiteSpace = 'pre';
+        code.style.overflow = 'visible';
+    });
 }
 
 /**
