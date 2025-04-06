@@ -1,44 +1,79 @@
-# My Projects
+# Project Index
 
 Welcome to my project showcase. Here you'll find a collection of my work across various domains including 3D printing, electronics, cybersecurity, and homelab setups.
 
 ## 3D Printing
 
-#### [3D Print Cost Calculator](/projects/3d-print-cost-calc)
+#### [3D Print Cost Calculator](/projects/3dpcc)
 
-A simple yet powerful tool to calculate the precise cost of 3D prints, factoring in material usage, electricity, and printer depreciation.
+Java application (CLI and web UI) used to estimate 3D printing costs by considering material usage, energy consumption, and optional commission.
 
-![3D Print Calculator](/img/projects/3d-print-calc-preview.jpg)
+**Technologies:** Java, JavaScript, HTML/CSS  
+**Status:** Completed
 
-**Technologies:** JavaScript, HTML/CSS  
-**Status:** Active Development
+#### [TOYO STEEL T-190 Toolbox Organizer Trays](https://www.printables.com/model/1193917-toyo-steel-t-190-toolbox-organizer-trays-wowstick)
 
-#### [Modular Desk Organizer](/projects/desk-organizer)
+Custom organizer trays for the TOYO STEEL Trunk Toolbox (T-190 series) to efficiently store and organize tools, small parts, and accessories. These trays fit perfectly inside the toolbox and provide dedicated compartments for various repair tools.
 
-Customizable desk organization system with interlocking components for tools, stationery, and electronics components.
+**Technologies:** Fusion 360, PLA  
+**Status:** Completed
 
-**Technologies:** Fusion 360, PLA/PETG  
+#### [Decorative Cube Grid Panels](https://www.printables.com/model/1087884-decorative-cube-grid-panels)
+
+Decorative cube grid panels designed for the front of the Corsair 110R PC case.
+
+**Technologies:** SketchUp, PLA  
 **Status:** Completed
 
 ---
 
 ## Electronics
 
-#### [Smart Home Sensor Hub](/projects/sensor-hub)
+#### [Kindle Unbrick](/projects/kindle-unbrick)
 
-ESP32-based multi-sensor platform monitoring temperature, humidity, air quality, and motion with MQTT integration for home automation.
+How I fixed a bricked Kindle after a failed jailbreak attempt.
 
-![Sensor Hub PCB](/img/projects/sensor-hub-pcb.jpg)
-
-**Technologies:** ESP32, PCB Design, MQTT, HomeAssistant  
-**Status:** Prototype
-
-#### [USB Power Monitor](/projects/usb-power-monitor)
-
-Inline USB device for measuring voltage, current, and power consumption of connected devices with OLED display.
-
-**Technologies:** STM32, PCB Design, C/C++  
+**Technologies:** serial/TTY, soldering, serial monitor  
 **Status:** Completed
+
+#### [ESP32 Morse Code Transmitter](/projects/esp32-morse)
+
+Uses EPS-NOW to connect two ESP32s. Pressing a button on one triggers a vibration on the other, providing a simple way to send and receive Morse code messages.
+
+**Technologies:** Arduino  
+**Status:** Beta | Archived
+
+#### [DTMF Message Encryption](https://github.com/rh45-one/DTMF-Encryption)
+
+This project aims to transmit text messages using DTMF tones encrypted using a dynamic key. These tones will be transmitted using PMR446 radios (no HAM licence required) and will provide a legal and secure off-grid method of communication.
+
+**Technologies:** Python  
+**Status:** Incomplete | Archived
+
+---
+
+## Electronics
+
+#### [Kindle Unbrick](/projects/kindle-unbrick)
+
+How I fixed a bricked Kindle after a failed jailbreak attempt.
+
+**Technologies:** serial/TTY, soldering, serial monitor  
+**Status:** Completed
+
+#### [ESP32 Morse Code Transmitter](https://github.com/rh45-one/Morse-Code-Transmitter)
+
+Uses EPS-NOW to connect two ESP32s. Pressing a button on one triggers a vibration on the other, providing a simple way to send and receive Morse code messages.
+
+**Technologies:** Python  
+**Status:** Beta | Archived
+
+#### [DTMF Message Encryption](https://github.com/rh45-one/DTMF-Encryption)
+
+This project aims to transmit text messages using DTMF tones encrypted using a dynamic key. These tones will be transmitted using PMR446 radios (no HAM licence required) and will provide a legal and secure off-grid method of communication.
+
+**Technologies:** Python  
+**Status:** Alpha | Archived
 
 ---
 
