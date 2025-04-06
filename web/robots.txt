@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Allow: /projects/
+Disallow: /css/
+Disallow: /img/social-logos/
+Disallow: /bundle.min.*.js
+
+# Point to sitemap
+Sitemap: https://rh45-one.github.io/sitemap.xml
