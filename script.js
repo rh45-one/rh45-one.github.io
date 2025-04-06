@@ -19,6 +19,47 @@ document.addEventListener('DOMContentLoaded', function() {
     } else {
         initializeAfterDependencies();
     }
+    
+    // Secret confetti button implementation
+    const confettiScript = document.createElement('script');
+    confettiScript.src = 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js';
+    document.head.appendChild(confettiScript);
+    
+    // Initialize click tracking
+    let clickCount = 0;
+    let lastClickTime = 0;
+    
+    // Find the h1 element after header is loaded
+    setTimeout(() => {
+        const secretButton = document.getElementById('secret-button');
+        if (!secretButton) return;
+        
+        secretButton.addEventListener('click', function(e) {
+            const now = Date.now();
+            
+            // Reset counter if clicks are too slow (more than 3 seconds apart)
+            if (now - lastClickTime > 3000) {
+                clickCount = 0;
+            }
+            
+            clickCount++;
+            lastClickTime = now;
+            
+            // Check if we've reached 10 quick clicks
+            if (clickCount === 10) {
+                // Explosion of confetti!
+                confetti({
+                    particleCount: 300,
+                    spread: 180,
+                    origin: { y: 0.6 },
+                    colors: ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff']
+                });
+                
+                // Reset the counter
+                clickCount = 0;
+            }
+        });
+    }, 1000);
 });
 
 /**
@@ -341,16 +382,13 @@ function loadPage(url, isMarkdownPage) {
                     console.log('Loading markdown from extracted URL:', markdownUrl);
                     loadMarkdownContent(markdownUrl);
                 } 
-                else if (isMarkdownPage || url.includes('/projects') || url.includes('/categories')) {
+                else if (isMarkdownPage || url.includes('/projects')) {
                     // Determine which markdown file to load based on the URL
-                    let mdPath = '/content/categories.md';
-                    
                     if (url.includes('/projects')) {
-                        mdPath = '/markdown/projects.md';  // This matches the path in the HTML file
+                        let mdPath = 'markdown/projects.md';  // This matches the path in the HTML file
+                        console.log('Loading markdown based on URL path:', mdPath);
+                        loadMarkdownContent(mdPath);
                     }
-                    
-                    console.log('Loading markdown based on URL path:', mdPath);
-                    loadMarkdownContent(mdPath);
                 }
             } else {
                 console.warn('Content elements not found', 
