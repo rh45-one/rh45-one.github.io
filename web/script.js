@@ -3,6 +3,13 @@
  * This ensures all HTML elements are available for manipulation
  */
 document.addEventListener('DOMContentLoaded', function() {
+    // Add version parameter to all CSS links to prevent caching
+    document.querySelectorAll('link[rel="stylesheet"]').forEach(link => {
+        if (!link.href.includes('?v=')) {
+            link.href = link.href + '?v=' + generateCacheBuster();
+        }
+    });
+    
     // Load marked.js for Markdown parsing if not already loaded
     if (typeof marked === 'undefined') {
         const script = document.createElement('script');
@@ -13,6 +20,15 @@ document.addEventListener('DOMContentLoaded', function() {
         initializeAfterDependencies();
     }
 });
+
+/**
+ * Generate a cache-busting parameter based on current time
+ * @returns {string} Cache-busting string
+ */
+function generateCacheBuster() {
+    // Use timestamp for simple versioning
+    return new Date().getTime().toString();
+}
 
 /**
  * Initialize the application after all dependencies are loaded
@@ -51,15 +67,20 @@ function initializeAfterDependencies() {
  * @param {string} markdownPath - Path to the markdown file
  */
 function loadMarkdownContent(markdownPath) {
+    // Add cache busting parameter to markdown URLs
+    const cacheBustedPath = markdownPath.includes('?') 
+        ? markdownPath + '&cb=' + generateCacheBuster()
+        : markdownPath + '?cb=' + generateCacheBuster();
+    
     // Show loading indicator in the markdown content area
     const contentElement = document.querySelector('.markdown-content');
     if (contentElement) {
         contentElement.innerHTML = '<h1>Loading Content</h1><p>Please wait...</p>';
     }
     
-    console.log('Fetching markdown from:', markdownPath);
+    console.log('Fetching markdown from:', cacheBustedPath);
     
-    fetch(markdownPath)
+    fetch(cacheBustedPath)
         .then(response => {
             console.log('Markdown fetch response status:', response.status);
             if (!response.ok) {
@@ -90,11 +111,11 @@ function loadMarkdownContent(markdownPath) {
             }
         })
         .catch(error => {
-            console.error('Error loading Markdown content:', error, 'Path was:', markdownPath);
+            console.error('Error loading Markdown content:', error, 'Path was:', cacheBustedPath);
             if (contentElement) {
                 contentElement.innerHTML = `
                     <h1>Error</h1>
-                    <p>Failed to load content from: ${markdownPath}</p>
+                    <p>Failed to load content from: ${cacheBustedPath}</p>
                     <p>Error: ${error.message}</p>
                     <p>Please check the console for more details.</p>
                 `;
