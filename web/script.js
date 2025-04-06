@@ -60,6 +60,9 @@ function initializeAfterDependencies() {
     if (currentPath === '/categories/' || currentPath === '/categories') {
         loadMarkdownContent('/content/categories.md');
     }
+
+    // Call version checking setup
+    setupVersionChecking();
 }
 
 /**
@@ -328,5 +331,93 @@ function highlightCurrentPage() {
         });
     } catch (error) {
         console.error('Error in highlightCurrentPage:', error);
+    }
+}
+
+/**
+ * Set up version checking
+ * Periodically checks if the site has been updated
+ */
+function setupVersionChecking() {
+    // Create a version file for your site
+    const versionUrl = '/version.txt?t=' + generateCacheBuster();
+    let currentVersion = localStorage.getItem('site-version') || '0';
+    
+    // Check for updates every minute
+    setInterval(() => {
+        fetch(versionUrl)
+            .then(response => response.text())
+            .then(version => {
+                if (version.trim() !== currentVersion && currentVersion !== '0') {
+                    // Site has been updated
+                    showUpdateNotification();
+                }
+                // Store the current version
+                localStorage.setItem('site-version', version.trim());
+                currentVersion = version.trim();
+            })
+            .catch(err => console.error('Version check failed:', err));
+    }, 60000); // Check every minute
+}
+
+/**
+ * Show a notification that the site has been updated
+ */
+function showUpdateNotification() {
+    // Create notification element if it doesn't exist
+    if (!document.querySelector('.update-notification')) {
+        const notification = document.createElement('div');
+        notification.className = 'update-notification';
+        notification.innerHTML = `
+            <div class="update-message">
+                This site has been updated. <a href="javascript:location.reload(true)">Refresh</a> to see the latest version.
+                <button class="close-notification">×</button>
+            </div>
+        `;
+        document.body.appendChild(notification);
+        
+        // Style the notification
+        const style = document.createElement('style');
+        style.textContent = `
+            .update-notification {
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background: #2bbc8a;
+                color: white;
+                padding: 12px 20px;
+                border-radius: 4px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+                z-index: 1000;
+                animation: slide-in 0.3s ease;
+            }
+            
+            .update-message a {
+                color: white;
+                text-decoration: underline;
+                margin-left: 5px;
+            }
+            
+            .close-notification {
+                background: none;
+                border: none;
+                color: white;
+                font-size: 20px;
+                cursor: pointer;
+                margin-left: 10px;
+                vertical-align: middle;
+            }
+            
+            @keyframes slide-in {
+                from { transform: translateY(100px); opacity: 0; }
+                to { transform: translateY(0); opacity: 1; }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Add event listener to close button
+        document.querySelector('.close-notification').addEventListener('click', function() {
+            document.querySelector('.update-notification').remove();
+        });
     }
 }
