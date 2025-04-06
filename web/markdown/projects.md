@@ -16,7 +16,7 @@ Java application (CLI and web UI) used to estimate 3D printing costs by consider
 Allows remapping of F9-F11 keys on ThinkPads
 
 **Technologies:** JavaScript, Bash, HTML/CSS  
-**Status:** Completed | Active
+**Status:** Completed
 
 #### [StudyLib Downloader](/projects/sl-down)
 
