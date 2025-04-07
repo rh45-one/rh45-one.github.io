@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', function() {
             lastClickTime = now;
             
             // Check if we've reached 10 quick clicks
-            if (clickCount === 5) {
+            if (clickCount === 3) {
                 // Explosion of confetti!
                 confetti({
                     particleCount: 300,
