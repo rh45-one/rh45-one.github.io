@@ -1,3 +1,8 @@
+// Move these variables outside DOMContentLoaded to make them global
+let clickCount = 0;
+let lastClickTime = 0;
+let confettiTriggeredCount = 0; // Track how many times confetti has been triggered
+
 /**
  * Wait for the DOM to be fully loaded before executing any JavaScript
  * This ensures all HTML elements are available for manipulation
@@ -25,42 +30,114 @@ document.addEventListener('DOMContentLoaded', function() {
     confettiScript.src = 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js';
     document.head.appendChild(confettiScript);
     
-    // Initialize click tracking
-    let clickCount = 0;
-    let lastClickTime = 0;
-    
-    // Find the h1 element after header is loaded
+    // Initialize click tracking moved outside setTimeout so it can be reused
     setTimeout(() => {
-        const secretButton = document.getElementById('secret-button');
-        if (!secretButton) return;
+        setupSecretButton(); // Call the function once on page load
+    }, 1000);
+});
+
+/**
+ * Setup the secret button functionality
+ * This function can be called after each page navigation
+ */
+function setupSecretButton() {
+    const secretButton = document.getElementById('secret-button');
+    if (!secretButton) return;
+    
+    // Remove any existing event listeners first (to prevent duplicates)
+    const newButton = secretButton.cloneNode(true);
+    secretButton.parentNode.replaceChild(newButton, secretButton);
+    
+    newButton.addEventListener('click', function(e) {
+        const now = Date.now();
         
-        secretButton.addEventListener('click', function(e) {
-            const now = Date.now();
+        // Reset counter if clicks are too slow (more than 3 seconds apart)
+        if (now - lastClickTime > 3000) {
+            clickCount = 0;
+        }
+        
+        clickCount++;
+        lastClickTime = now;
+        
+        // Check if we've reached 3 quick clicks
+        if (clickCount === 3) {
+            confettiTriggeredCount++;
             
-            // Reset counter if clicks are too slow (more than 3 seconds apart)
-            if (now - lastClickTime > 3000) {
-                clickCount = 0;
-            }
-            
-            clickCount++;
-            lastClickTime = now;
-            
-            // Check if we've reached 10 quick clicks
-            if (clickCount === 3) {
-                // Explosion of confetti!
+            // Every third time, show explosion instead of confetti
+            if (confettiTriggeredCount >= 3) {
+                // Get position of the rh45 heading instead of mouse position
+                const rect = newButton.getBoundingClientRect();
+                const centerX = rect.left + (rect.width / 2);
+                const centerY = rect.top + (rect.height / 2);
+                
+                // Create explosion effect centered at the heading
+                createExplosion(centerX, centerY);
+                
+                // Reset the confetti trigger counter
+                confettiTriggeredCount = 0;
+            } else {
+                // Regular confetti
                 confetti({
                     particleCount: 300,
                     spread: 180,
                     origin: { y: 0.6 },
                     colors: ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff']
                 });
-                
-                // Reset the counter
-                clickCount = 0;
             }
-        });
-    }, 1000);
-});
+            
+            // Reset the click counter
+            clickCount = 0;
+        }
+    });
+}
+
+// Move createExplosion outside the DOMContentLoaded so it can be used after navigation
+function createExplosion(x, y) {
+    // Create explosion container
+    const explosionContainer = document.createElement('div');
+    explosionContainer.className = 'explosion-container';
+    explosionContainer.style.position = 'fixed';
+    explosionContainer.style.left = `${x}px`;
+    explosionContainer.style.top = `${y}px`;
+    explosionContainer.style.zIndex = '9999';
+    explosionContainer.style.pointerEvents = 'none';
+    
+    // Create flash element
+    const flash = document.createElement('div');
+    flash.className = 'explosion-flash';
+    document.body.appendChild(flash);
+    
+    // Create fireball element
+    const fireball = document.createElement('div');
+    fireball.className = 'fireball';
+    fireball.style.position = 'absolute';
+    fireball.style.left = '50%';
+    fireball.style.top = '50%';
+    fireball.style.transform = 'translate(-50%, -50%)';
+    
+    // Create smoke element
+    const smoke = document.createElement('div');
+    smoke.className = 'smoke';
+    smoke.style.position = 'absolute';
+    smoke.style.left = '50%';
+    smoke.style.top = '50%';
+    smoke.style.transform = 'translate(-50%, -50%)';
+    
+    // Add elements to container
+    explosionContainer.appendChild(smoke);
+    explosionContainer.appendChild(fireball);
+    document.body.appendChild(explosionContainer);
+    
+    // Add a shaking effect to the page
+    document.body.classList.add('explosion-shake');
+    
+    // Remove explosion elements after animation completes
+    setTimeout(() => {
+        document.body.classList.remove('explosion-shake');
+        explosionContainer.remove();
+        flash.remove();
+    }, 3500); // Match this to the total animation duration
+}
 
 /**
  * Generate a cache-busting parameter based on current time
@@ -419,6 +496,11 @@ function loadPage(url, isMarkdownPage) {
             setTimeout(() => {
                 document.body.classList.remove('page-transition');
                 document.body.classList.remove('loading');
+                
+                // Reattach event listeners to new elements on the homepage
+                if (url === '/' || url === '/index.html') {
+                    setupSecretButton();
+                }
             }, 200);
         })
         .catch(error => {
@@ -547,6 +629,24 @@ function showUpdateNotification() {
                 from { transform: translateY(100px); opacity: 0; }
                 to { transform: translateY(0); opacity: 1; }
             }
+            
+            @keyframes explosion-shake {
+                0% { transform: translate(0, 0) rotate(0); }
+                10% { transform: translate(-5px, -5px) rotate(-1deg); }
+                20% { transform: translate(5px, -5px) rotate(1deg); }
+                30% { transform: translate(-5px, 5px) rotate(0); }
+                40% { transform: translate(5px, 5px) rotate(1deg); }
+                50% { transform: translate(-5px, -5px) rotate(-1deg); }
+                60% { transform: translate(5px, -5px) rotate(0); }
+                70% { transform: translate(-5px, 5px) rotate(-1deg); }
+                80% { transform: translate(-5px, -5px) rotate(1deg); }
+                90% { transform: translate(5px, -5px) rotate(0); }
+                100% { transform: translate(0, 0) rotate(0); }
+            }
+            
+            .explosion-shake {
+                animation: explosion-shake 0.5s linear;
+            }
         `;
         document.head.appendChild(style);
         
@@ -555,4 +655,192 @@ function showUpdateNotification() {
             document.querySelector('.update-notification').remove();
         });
     }
+}
+
+// Add these styles to the existing styles section
+// (in the showUpdateNotification function or in a separate CSS file)
+const explosionStyles = `
+    @keyframes explosion-shake {
+        0% { transform: translate(0, 0) rotate(0); }
+        10% { transform: translate(-10px, -10px) rotate(-2deg); }
+        20% { transform: translate(10px, -10px) rotate(2deg); }
+        30% { transform: translate(-10px, 10px) rotate(-1deg); }
+        40% { transform: translate(10px, 10px) rotate(1deg); }
+        50% { transform: translate(-5px, -5px) rotate(-0.5deg); }
+        60% { transform: translate(5px, -5px) rotate(0.5deg); }
+        70% { transform: translate(-2px, 2px) rotate(-0.25deg); }
+        80% { transform: translate(2px, -2px) rotate(0.25deg); }
+        100% { transform: translate(0, 0) rotate(0); }
+    }
+    
+    .explosion-shake {
+        animation: explosion-shake 0.8s ease-out;
+    }
+    
+    .explosion-container {
+        width: 10px;
+        height: 10px;
+        pointer-events: none;
+    }
+    
+    @keyframes fireball {
+        0% { 
+            width: 20px;
+            height: 20px;
+            opacity: 0.9;
+            background: radial-gradient(circle, white 0%, #ffdd00 30%, #ff5500 70%, #ff3300 100%);
+            border-radius: 50% 20% 60% 30% / 30% 70% 40% 50%;
+            transform: rotate(0deg) scale(1);
+        }
+        5% { 
+            width: 80px;
+            height: 80px;
+            opacity: 1;
+            background: radial-gradient(circle, white 0%, #ffdd00 20%, #ff5500 60%, #ff3300 100%);
+            border-radius: 70% 30% 50% 20% / 20% 60% 30% 70%;
+            transform: rotate(15deg) scale(1.1);
+        }
+        15% { 
+            width: 160px;
+            height: 160px;
+            opacity: 1;
+            background: radial-gradient(circle, white 0%, #ffdd00 15%, #ff5500 50%, #ff3300 100%);
+            border-radius: 30% 60% 20% 70% / 60% 30% 70% 20%;
+            transform: rotate(30deg) scale(1.2);
+        }
+        40% { 
+            width: 220px;
+            height: 220px;
+            opacity: 0.8;
+            background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,221,0,0.8) 10%, rgba(255,85,0,0.7) 40%, rgba(255,51,0,0.5) 100%);
+            border-radius: 40% 20% 70% 30% / 30% 60% 40% 80%;
+            transform: rotate(45deg) scale(1.1);
+        }
+        100% { 
+            width: 180px;
+            height: 180px;
+            opacity: 0;
+            background: radial-gradient(circle, rgba(255,255,255,0) 0%, rgba(255,221,0,0) 10%, rgba(255,85,0,0) 40%, rgba(255,51,0,0) 100%);
+            border-radius: 50%;
+            transform: rotate(60deg) scale(1);
+        }
+    }
+    
+    .fireball {
+        position: absolute;
+        transform: translate(-50%, -50%);
+        box-shadow: 0 0 80px 30px rgba(255,160,0,0.8);
+        animation: fireball 2s cubic-bezier(0.215, 0.610, 0.355, 1.000) forwards;
+        mix-blend-mode: screen;
+        z-index: 10000;
+    }
+    
+    .fireball::before, .fireball::after {
+        content: "";
+        position: absolute;
+        background: radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(255,221,0,0.9) 20%, rgba(255,85,0,0.7) 60%, rgba(255,51,0,0.5) 100%);
+        animation: spikes 1.5s cubic-bezier(0.215, 0.610, 0.355, 1.000) forwards;
+        border-radius: 30% 70% 40% 60% / 60% 30% 70% 40%;
+        z-index: 10001;
+    }
+    
+    .fireball::before {
+        top: -15%;
+        left: 25%;
+        width: 60%;
+        height: 60%;
+        transform: rotate(25deg);
+    }
+    
+    .fireball::after {
+        bottom: -5%;
+        right: 10%;
+        width: 50%;
+        height: 50%;
+        transform: rotate(-45deg);
+    }
+    
+    @keyframes spikes {
+        0% {
+            opacity: 0;
+            transform: scale(0.2) rotate(0deg);
+        }
+        15% {
+            opacity: 1;
+            transform: scale(1.3) rotate(15deg);
+        }
+        50% {
+            opacity: 0.7;
+            transform: scale(1.8) rotate(30deg);
+        }
+        100% {
+            opacity: 0;
+            transform: scale(1) rotate(45deg);
+        }
+    }
+    
+    @keyframes smoke {
+        0% { 
+            width: 0px;
+            height: 0px;
+            opacity: 0;
+            background-color: rgba(80,80,80,0.8);
+            transform: translate(-50%, -50%) translateY(0);
+        }
+        15% { 
+            width: 120px;
+            height: 120px;
+            opacity: 0.8;
+            background-color: rgba(90,90,90,0.8);
+            transform: translate(-50%, -50%) translateY(0);
+        }
+        50% { 
+            width: 350px;
+            height: 350px;
+            opacity: 0.7;
+            background-color: rgba(100,100,100,0.6);
+            transform: translate(-50%, -50%) translateY(-50px);
+        }
+        100% { 
+            width: 600px;
+            height: 600px;
+            opacity: 0;
+            background-color: rgba(120,120,120,0.1);
+            transform: translate(-50%, -50%) translateY(-100px);
+        }
+    }
+    
+    .smoke {
+        position: absolute;
+        border-radius: 40% 60% 55% 45% / 60% 40% 60% 40%;
+        filter: blur(30px);
+        animation: smoke 3.5s ease-out forwards;
+        z-index: 9999;
+        /* Remove top: 0; left: 0; as we're setting them inline */
+    }
+    
+    @keyframes flash {
+        0%, 20% { opacity: 1; }
+        21%, 100% { opacity: 0; }
+    }
+    
+    .explosion-flash {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.4);
+        pointer-events: none;
+        z-index: 9998;
+        animation: flash 0.5s ease-out forwards;
+    }
+`;
+
+// Add the explosion styles to the document
+if (!document.getElementById('explosion-styles')) {
+    const styleElement = document.createElement('style');
+    styleElement.id = 'explosion-styles';
+    styleElement.textContent = explosionStyles;
+    document.head.appendChild(styleElement);
 }
