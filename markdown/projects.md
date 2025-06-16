@@ -11,7 +11,7 @@ Welcome to my project showcase. Here you'll find a collection of my work across 
 A simple and intuitive personal savings tracker that helps you organize your money into customizable categories, track income and expenses, and visualize your progress over time — all stored locally on your device.
 
 **Technologies:** Kotlin  
-**Status:** In Development | Active
+**Status:** Unfinished | Active
 
 #### [3D Print Cost Calculator](/projects/3dpcc)
 
