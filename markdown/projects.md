@@ -6,6 +6,13 @@ Welcome to my project showcase. Here you'll find a collection of my work across 
 
 ## Software
 
+#### [Savion](/projects/savion)
+
+A simple and intuitive personal savings tracker that helps you organize your money into customizable categories, track income and expenses, and visualize your progress over time — all stored locally on your device.
+
+**Technologies:** Java, JavaScript, HTML/CSS  
+**Status:** In Development | Active
+
 #### [3D Print Cost Calculator](/projects/3dpcc)
 
 Java application (CLI and web UI) used to estimate 3D printing costs by considering material usage, energy consumption, and optional commission.
