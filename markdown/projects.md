@@ -81,4 +81,4 @@ Uses EPS-NOW to connect two ESP32s. Pressing a button on one triggers a vibratio
 
 ---
 
-*Last updated: April 2025*
+*Last updated: June 2025*
