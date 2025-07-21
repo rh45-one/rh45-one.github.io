@@ -33,7 +33,7 @@
 /* Responsive adjustments for mobile */
 @media (max-width: 684px) {
     .social-icons {
-        margin-left: 10px;
+        display: none; /* Hide desktop social icons on mobile */
     }
     
     .social-icon {

@@ -168,7 +168,7 @@ function setupMobileMenu() {
         }
     });
     
-    // Close menu when clicking on a menu item
+    // Close menu when clicking on a menu item or social icon
     const menuLinks = menu.querySelectorAll('a');
     menuLinks.forEach(link => {
         link.addEventListener('click', function() {
