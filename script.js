@@ -33,6 +33,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize click tracking moved outside setTimeout so it can be reused
     setTimeout(() => {
         setupSecretButton(); // Call the function once on page load
+        setupMobileMenu(); // Setup mobile menu functionality
     }, 1000);
 });
 
@@ -137,6 +138,43 @@ function createExplosion(x, y) {
         explosionContainer.remove();
         flash.remove();
     }, 3500); // Match this to the total animation duration
+}
+
+/**
+ * Setup mobile menu functionality
+ */
+function setupMobileMenu() {
+    const menuTrigger = document.getElementById('menu-trigger');
+    const menu = document.querySelector('.menu');
+    
+    if (!menuTrigger || !menu) return;
+    
+    // Remove any existing event listeners first (to prevent duplicates)
+    const newMenuTrigger = menuTrigger.cloneNode(true);
+    menuTrigger.parentNode.replaceChild(newMenuTrigger, menuTrigger);
+    
+    newMenuTrigger.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        // Toggle the menu
+        menu.classList.toggle('open');
+    });
+    
+    // Close menu when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!menu.contains(e.target) && !newMenuTrigger.contains(e.target)) {
+            menu.classList.remove('open');
+        }
+    });
+    
+    // Close menu when clicking on a menu item or social icon
+    const menuLinks = menu.querySelectorAll('a');
+    menuLinks.forEach(link => {
+        link.addEventListener('click', function() {
+            menu.classList.remove('open');
+        });
+    });
 }
 
 /**
@@ -501,6 +539,9 @@ function loadPage(url, isMarkdownPage) {
                 if (url === '/' || url === '/index.html') {
                     setupSecretButton();
                 }
+                
+                // Always setup mobile menu after navigation
+                setupMobileMenu();
             }, 200);
         })
         .catch(error => {
