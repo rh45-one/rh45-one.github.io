@@ -35,6 +35,13 @@ Three versions: Browser extension, Tampermonkey script, and Bash script.
 **Technologies:** JavaScript, Bash, HTML/CSS  
 **Status:** Completed | Active
 
+#### [Savion](/projects/savion)
+
+Lightweight personal ledger web app with a Jinja2 UI that records add/withdraw movements in a newline-delimited JSON ledger, supports import/export, settings snapshots, and a protected reset.
+
+**Technologies:** Python, FastAPI, Jinja2, HTML/CSS, Docker
+**Status:** Active
+
 #### [Team Wordle](/projects/team-wordle)
 
 Collaborative wordle game with in-game chat.
