@@ -30,7 +30,7 @@ Three versions: Browser extension, Tampermonkey script, and Bash script.
 
 #### [Savion](/projects/savion)
 
-Lightweight personal ledger web app with a Jinja2 UI that records add/withdraw movements in a newline-delimited JSON ledger, supports import/export, settings snapshots, and a protected reset.
+lightweight self-hosted cash balance tracker with simple add/withdraw logs.
 
 **Technologies:** Python, FastAPI, Jinja2, HTML/CSS, Docker
 **Status:** Active
