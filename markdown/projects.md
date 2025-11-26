@@ -6,12 +6,12 @@ Welcome to my project showcase. Here you'll find a collection of my work across 
 
 ## Software
 
-#### [3D Print Cost Calculator](/projects/3dpcc)
+#### [Savion](/projects/savion)
 
-Java application (CLI and web UI) used to estimate 3D printing costs by considering material usage, energy consumption, and optional commission.
+lightweight self-hosted cash balance tracker with simple add/withdraw logs.
 
-**Technologies:** Java, JavaScript, HTML/CSS  
-**Status:** Completed | Active
+**Technologies:** Python, FastAPI, Jinja2, HTML/CSS, Docker
+**Status:** Active
 
 #### [ThinkPad Hotkey Fix](/projects/tp-hk)
 
@@ -28,12 +28,12 @@ Three versions: Browser extension, Tampermonkey script, and Bash script.
 **Technologies:** JavaScript, Bash, HTML/CSS  
 **Status:** Completed | Active
 
-#### [Savion](/projects/savion)
+#### [3D Print Cost Calculator](/projects/3dpcc)
 
-Lightweight personal ledger web app with a Jinja2 UI that records add/withdraw movements in a newline-delimited JSON ledger, supports import/export, settings snapshots, and a protected reset.
+Java application (CLI and web UI) used to estimate 3D printing costs by considering material usage, energy consumption, and optional commission.
 
-**Technologies:** Python, FastAPI, Jinja2, HTML/CSS, Docker
-**Status:** Active
+**Technologies:** Java, JavaScript, HTML/CSS  
+**Status:** Completed | Active
 
 #### [Team Wordle](/projects/team-wordle)
 
@@ -81,4 +81,20 @@ Uses EPS-NOW to connect two ESP32s. Pressing a button on one triggers a vibratio
 
 ---
 
-*Last updated: June 2025*
+## Hackathons (Archive)
+
+#### [Oracle Challenge: The Summer Song](/hackathons/oracle-sssp-r6)
+
+Project for Challenge The Summer Song Hackathon, Task #6, under the Enseña by Oracle Spain program. Trains an ML model to predict which acoustic features and popularity metrics make a track a successful “Summer Song”.
+
+**Technologies:** Jupyter Notebook, Python
+**Status:** Completed
+
+#### [Accenture GenAI Mavericks 2025](/hackathons/acc-genai-2025)
+
+Citizen-friendly explanations for dense legal documents. Upload a PDF, image, or text file and Justice Made Clear handles OCR, normalization, classification, simplification, legal guidance, and safety checks to return plain-language insights plus actionable next steps.
+
+**Technologies:** Python, Ollama, React, JavaScript, HTML...
+**Status:** Completed (Demo)
+
+*Last updated: November 2025*
