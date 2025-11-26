@@ -6,12 +6,12 @@ Welcome to my project showcase. Here you'll find a collection of my work across 
 
 ## Software
 
-#### [3D Print Cost Calculator](/projects/3dpcc)
+#### [Savion](/projects/savion)
 
-Java application (CLI and web UI) used to estimate 3D printing costs by considering material usage, energy consumption, and optional commission.
+lightweight self-hosted cash balance tracker with simple add/withdraw logs.
 
-**Technologies:** Java, JavaScript, HTML/CSS  
-**Status:** Completed | Active
+**Technologies:** Python, FastAPI, Jinja2, HTML/CSS, Docker
+**Status:** Active
 
 #### [ThinkPad Hotkey Fix](/projects/tp-hk)
 
@@ -28,12 +28,12 @@ Three versions: Browser extension, Tampermonkey script, and Bash script.
 **Technologies:** JavaScript, Bash, HTML/CSS  
 **Status:** Completed | Active
 
-#### [Savion](/projects/savion)
+#### [3D Print Cost Calculator](/projects/3dpcc)
 
-lightweight self-hosted cash balance tracker with simple add/withdraw logs.
+Java application (CLI and web UI) used to estimate 3D printing costs by considering material usage, energy consumption, and optional commission.
 
-**Technologies:** Python, FastAPI, Jinja2, HTML/CSS, Docker
-**Status:** Active
+**Technologies:** Java, JavaScript, HTML/CSS  
+**Status:** Completed | Active
 
 #### [Team Wordle](/projects/team-wordle)
 
@@ -97,4 +97,4 @@ Citizen-friendly explanations for dense legal documents. Upload a PDF, image, or
 **Technologies:** Python, Ollama, React, JavaScript, HTML...
 **Status:** Completed (Demo)
 
-*Last updated: June 2025*
+*Last updated: November 2025*
