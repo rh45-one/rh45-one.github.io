@@ -97,4 +97,6 @@ Citizen-friendly explanations for dense legal documents. Upload a PDF, image, or
 **Technologies:** Python, Ollama, React, JavaScript, HTML...
 **Status:** Completed (Demo)
 
+---
+
 *Last updated: November 2025*
