@@ -81,4 +81,20 @@ Uses EPS-NOW to connect two ESP32s. Pressing a button on one triggers a vibratio
 
 ---
 
+## Hackathons (Archive)
+
+#### [Oracle Challenge: The Summer Song](/hackathons/oracle-sssp-r6)
+
+Project for Challenge The Summer Song Hackathon, Task #6, under the Enseña by Oracle Spain program. Trains an ML model to predict which acoustic features and popularity metrics make a track a successful “Summer Song”.
+
+**Technologies:** Jupyter Notebook, Python
+**Status:** Completed
+
+#### [Accenture GenAI Mavericks 2025](/hackathons/acc-genai-2025)
+
+Citizen-friendly explanations for dense legal documents. Upload a PDF, image, or text file and Justice Made Clear handles OCR, normalization, classification, simplification, legal guidance, and safety checks to return plain-language insights plus actionable next steps.
+
+**Technologies:** Python, Ollama, React, JavaScript, HTML...
+**Status:** Completed (Demo)
+
 *Last updated: June 2025*
