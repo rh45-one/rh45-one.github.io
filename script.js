@@ -2,6 +2,19 @@
 let clickCount = 0;
 let lastClickTime = 0;
 let confettiTriggeredCount = 0; // Track how many times confetti has been triggered
+// Subtitle easter egg (Conway) click tracking
+let subtitleClickCount = 0;
+let subtitleLastClickTime = 0;
+// Conway Game of Life background state
+let lifeCanvas = null;
+let lifeCtx = null;
+let lifeAnimationId = null;
+let lifeGame = null;
+let lifeIsRunning = false;
+let lifeLastFrame = 0;
+let lifeResizeListenerAttached = false;
+let lifeStylesInjected = false;
+const LIFE_CELL_SIZE = 12; // px
 
 /**
  * Wait for the DOM to be fully loaded before executing any JavaScript
@@ -34,6 +47,7 @@ document.addEventListener('DOMContentLoaded', function() {
     setTimeout(() => {
         setupSecretButton(); // Call the function once on page load
         setupMobileMenu(); // Setup mobile menu functionality
+        setupSubtitleEasterEgg(); // Enable Conway easter egg on subtitle
     }, 1000);
 });
 
@@ -175,6 +189,184 @@ function setupMobileMenu() {
             menu.classList.remove('open');
         });
     });
+}
+
+/**
+ * Setup subtitle easter egg (Conway's Game of Life background)
+ * Five rapid clicks toggle the background animation
+ */
+function setupSubtitleEasterEgg() {
+    const subtitle = document.querySelector('.subtitle');
+    if (!subtitle) return;
+    
+    const newSubtitle = subtitle.cloneNode(true);
+    subtitle.parentNode.replaceChild(newSubtitle, subtitle);
+    
+    newSubtitle.style.cursor = 'pointer';
+    newSubtitle.title = 'Click 5 times to toggle Life mode';
+    
+    newSubtitle.addEventListener('click', () => {
+        const now = Date.now();
+        if (now - subtitleLastClickTime > 3000) {
+            subtitleClickCount = 0;
+        }
+        subtitleClickCount++;
+        subtitleLastClickTime = now;
+        
+        if (subtitleClickCount >= 5) {
+            subtitleClickCount = 0;
+            toggleGameOfLifeBackground();
+        }
+    });
+}
+
+// Conway Game of Life implementation (adapted from https://github.com/nomatteus/conway-game-of-life-js)
+class GameOfLife {
+    constructor(rows, cols) {
+        this.rows = rows;
+        this.cols = cols;
+        this.grid = this.createGrid();
+        this.randomize();
+    }
+    createGrid() {
+        return Array.from({ length: this.rows }, () => new Array(this.cols).fill(0));
+    }
+    randomize() {
+        this.grid = this.grid.map(row => row.map(() => (Math.random() > 0.7 ? 1 : 0)));
+    }
+    countNeighbors(row, col) {
+        let count = 0;
+        for (let y = -1; y <= 1; y++) {
+            for (let x = -1; x <= 1; x++) {
+                if (x === 0 && y === 0) continue;
+                const r = row + y;
+                const c = col + x;
+                if (r >= 0 && r < this.rows && c >= 0 && c < this.cols) {
+                    count += this.grid[r][c];
+                }
+            }
+        }
+        return count;
+    }
+    step() {
+        const next = this.createGrid();
+        for (let r = 0; r < this.rows; r++) {
+            for (let c = 0; c < this.cols; c++) {
+                const neighbors = this.countNeighbors(r, c);
+                const alive = this.grid[r][c] === 1;
+                next[r][c] = (alive && (neighbors === 2 || neighbors === 3)) || (!alive && neighbors === 3) ? 1 : 0;
+            }
+        }
+        this.grid = next;
+    }
+}
+
+function toggleGameOfLifeBackground() {
+    if (lifeIsRunning) {
+        stopGameOfLifeBackground();
+    } else {
+        startGameOfLifeBackground();
+    }
+}
+
+function startGameOfLifeBackground() {
+    if (lifeIsRunning) return;
+    injectLifeStyles();
+    createLifeCanvasIfNeeded();
+    resizeLifeCanvas();
+    lifeIsRunning = true;
+    lifeLastFrame = 0;
+    lifeAnimationId = requestAnimationFrame(lifeLoop);
+    if (!lifeResizeListenerAttached) {
+        window.addEventListener('resize', resizeLifeCanvas);
+        lifeResizeListenerAttached = true;
+    }
+}
+
+function stopGameOfLifeBackground() {
+    lifeIsRunning = false;
+    if (lifeAnimationId) {
+        cancelAnimationFrame(lifeAnimationId);
+        lifeAnimationId = null;
+    }
+    if (lifeCanvas) {
+        lifeCanvas.remove();
+        lifeCanvas = null;
+        lifeCtx = null;
+    }
+    lifeGame = null;
+}
+
+function createLifeCanvasIfNeeded() {
+    if (lifeCanvas) return;
+    lifeCanvas = document.createElement('canvas');
+    lifeCanvas.id = 'life-canvas';
+    lifeCanvas.setAttribute('aria-hidden', 'true');
+    document.body.prepend(lifeCanvas);
+    lifeCtx = lifeCanvas.getContext('2d');
+}
+
+function injectLifeStyles() {
+    if (lifeStylesInjected) return;
+    const style = document.createElement('style');
+    style.id = 'life-styles';
+    style.textContent = `
+        #life-canvas {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.28;
+            background: transparent;
+        }
+        body { position: relative; }
+        .container, header, main, footer { position: relative; z-index: 1; }
+    `;
+    document.head.appendChild(style);
+    lifeStylesInjected = true;
+}
+
+function resizeLifeCanvas() {
+    if (!lifeCanvas) return;
+    lifeCanvas.width = window.innerWidth;
+    lifeCanvas.height = window.innerHeight;
+    const rows = Math.ceil(lifeCanvas.height / LIFE_CELL_SIZE);
+    const cols = Math.ceil(lifeCanvas.width / LIFE_CELL_SIZE);
+    lifeGame = new GameOfLife(rows, cols);
+}
+
+function lifeLoop(timestamp) {
+    if (!lifeIsRunning || !lifeCtx || !lifeGame) return;
+    if (timestamp - lifeLastFrame < 80) {
+        lifeAnimationId = requestAnimationFrame(lifeLoop);
+        return;
+    }
+    lifeLastFrame = timestamp;
+    lifeGame.step();
+    drawLifeFrame();
+    lifeAnimationId = requestAnimationFrame(lifeLoop);
+}
+
+function drawLifeFrame() {
+    if (!lifeCtx || !lifeCanvas || !lifeGame) return;
+    lifeCtx.fillStyle = 'rgba(12, 13, 15, 0.35)';
+    lifeCtx.fillRect(0, 0, lifeCanvas.width, lifeCanvas.height);
+    lifeCtx.fillStyle = '#2bbc8a';
+    const grid = lifeGame.grid;
+    for (let r = 0; r < grid.length; r++) {
+        for (let c = 0; c < grid[r].length; c++) {
+            if (grid[r][c]) {
+                lifeCtx.fillRect(
+                    c * LIFE_CELL_SIZE,
+                    r * LIFE_CELL_SIZE,
+                    LIFE_CELL_SIZE - 1,
+                    LIFE_CELL_SIZE - 1
+                );
+            }
+        }
+    }
 }
 
 /**
@@ -538,6 +730,7 @@ function loadPage(url, isMarkdownPage) {
                 // Reattach event listeners to new elements on the homepage
                 if (url === '/' || url === '/index.html') {
                     setupSecretButton();
+                    setupSubtitleEasterEgg();
                 }
                 
                 // Always setup mobile menu after navigation
