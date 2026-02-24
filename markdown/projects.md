@@ -6,9 +6,16 @@ Welcome to my project showcase. Here you'll find a collection of my work across 
 
 ## Software
 
+#### [FlightRadius](/projects/flightradius)
+
+A Dockerized app that tracks live aircraft from OpenSky and shows how far they are from you in real time.
+
+**Technologies:** TypeScript, Python, JavaScript, HTML/CSS, Docker
+**Status:** Active
+
 #### [Savion](/projects/savion)
 
-lightweight self-hosted cash balance tracker with simple add/withdraw logs.
+Lightweight self-hosted cash balance tracker with simple add/withdraw logs.
 
 **Technologies:** Python, FastAPI, Jinja2, HTML/CSS, Docker
 **Status:** Active
@@ -33,15 +40,7 @@ Three versions: Browser extension, Tampermonkey script, and Bash script.
 Java application (CLI and web UI) used to estimate 3D printing costs by considering material usage, energy consumption, and optional commission.
 
 **Technologies:** Java, JavaScript, HTML/CSS  
-**Status:** Completed | Active
-
-#### [Team Wordle](/projects/team-wordle)
-
-Collaborative wordle game with in-game chat.
-Base game working - chat feature pending.
-
-**Technologies:** JavaScript, HTML/CSS  
-**Status:** Alpha | Inactive
+**Status:** Completed
 
 ---
 
