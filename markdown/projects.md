@@ -77,6 +77,7 @@ Citizen-friendly explanations for dense legal documents. Upload a PDF, image, or
 
 Project for Challenge The Summer Song Hackathon, Task #6, under the Enseña by Oracle Spain program. Trains an ML model to predict which acoustic features and popularity metrics make a track a successful “Summer Song”.
 
----
 **Technologies:** Jupyter Notebook, Python
 **Status:** Completed
+
+---
