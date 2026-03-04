@@ -44,24 +44,6 @@ Java application (CLI and web UI) used to estimate 3D printing costs by consider
 
 ---
 
-## 3D Printing
-
-#### [TOYO STEEL T-190 Toolbox Organizer Trays](https://www.printables.com/model/1193917-toyo-steel-t-190-toolbox-organizer-trays-wowstick)
-
-Custom organizer trays for the TOYO STEEL Trunk Toolbox (T-190 series) to efficiently store and organize tools, small parts, and accessories. These trays fit perfectly inside the toolbox and provide dedicated compartments for various repair tools.
-
-**Technologies:** Fusion 360, PLA  
-**Status:** Completed
-
-#### [Decorative Cube Grid Panels](https://www.printables.com/model/1087884-decorative-cube-grid-panels)
-
-Decorative cube grid panels designed for the front of the Corsair 110R PC case.
-
-**Technologies:** SketchUp, PLA  
-**Status:** Completed
-
----
-
 ## Electronics
 
 #### [Kindle Unbrick](/projects/kindle-unbrick)
@@ -82,13 +64,6 @@ Uses EPS-NOW to connect two ESP32s. Pressing a button on one triggers a vibratio
 
 ## Hackathons (Archive)
 
-#### [Oracle Challenge: The Summer Song](/hackathons/oracle-sssp-r6)
-
-Project for Challenge The Summer Song Hackathon, Task #6, under the Enseña by Oracle Spain program. Trains an ML model to predict which acoustic features and popularity metrics make a track a successful “Summer Song”.
-
-**Technologies:** Jupyter Notebook, Python
-**Status:** Completed
-
 #### [Accenture GenAI Mavericks 2025](/hackathons/acc-genai-2025)
 
 Citizen-friendly explanations for dense legal documents. Upload a PDF, image, or text file and Justice Made Clear handles OCR, normalization, classification, simplification, legal guidance, and safety checks to return plain-language insights plus actionable next steps.
@@ -99,3 +74,10 @@ Citizen-friendly explanations for dense legal documents. Upload a PDF, image, or
 ---
 
 *Last updated: November 2025*
+
+#### [Oracle Challenge: The Summer Song](/hackathons/oracle-sssp-r6)
+
+Project for Challenge The Summer Song Hackathon, Task #6, under the Enseña by Oracle Spain program. Trains an ML model to predict which acoustic features and popularity metrics make a track a successful “Summer Song”.
+
+**Technologies:** Jupyter Notebook, Python
+**Status:** Completed
