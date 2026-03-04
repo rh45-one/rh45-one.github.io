@@ -71,8 +71,6 @@ Citizen-friendly explanations for dense legal documents. Upload a PDF, image, or
 **Technologies:** Python, Ollama, React, JavaScript, HTML...
 **Status:** Completed (Demo)
 
-*Last updated: November 2025*
-
 #### [Oracle Challenge: The Summer Song](/hackathons/oracle-sssp-r6)
 
 Project for Challenge The Summer Song Hackathon, Task #6, under the Enseña by Oracle Spain program. Trains an ML model to predict which acoustic features and popularity metrics make a track a successful “Summer Song”.
@@ -81,3 +79,5 @@ Project for Challenge The Summer Song Hackathon, Task #6, under the Enseña by O
 **Status:** Completed
 
 ---
+
+*Last updated: March 2026*
