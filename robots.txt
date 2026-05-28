@@ -4,6 +4,8 @@ Allow: /projects/
 Disallow: /css/
 Disallow: /img/social-logos/
 Disallow: /bundle.min.*.js
+Disallow: /projects/3dpcc/
+Disallow: /projects/esp32-morse/
 
 # Point to sitemap
-Sitemap: https://rh45-one.github.io/sitemap.xml
+Sitemap: https://hrgsen.one/sitemap.xml

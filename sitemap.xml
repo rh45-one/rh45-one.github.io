@@ -18,10 +18,6 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://rh45-one.github.io/projects/3dpcc/</loc>
-    <priority>0.7</priority>
-  </url>
-  <url>
     <loc>https://rh45-one.github.io/projects/tp-hk/</loc>
     <priority>0.7</priority>
   </url>
@@ -31,10 +27,6 @@
   </url>
   <url>
     <loc>https://rh45-one.github.io/projects/team-wordle/</loc>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://rh45-one.github.io/projects/esp32-morse/</loc>
     <priority>0.7</priority>
   </url>
   <url>

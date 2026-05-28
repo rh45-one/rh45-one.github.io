@@ -35,13 +35,6 @@ Three versions: Browser extension, Tampermonkey script, and Bash script.
 **Technologies:** JavaScript, Bash, HTML/CSS  
 **Status:** Completed | Active
 
-#### [3D Print Cost Calculator](/projects/3dpcc)
-
-Java application (CLI and web UI) used to estimate 3D printing costs by considering material usage, energy consumption, and optional commission.
-
-**Technologies:** Java, JavaScript, HTML/CSS  
-**Status:** Completed
-
 ---
 
 ## Electronics
@@ -52,13 +45,6 @@ How I fixed a bricked Kindle after a failed jailbreak attempt.
 
 **Technologies:** serial/TTY, soldering, serial monitor  
 **Status:** Completed
-
-#### [ESP32 Morse Code Transmitter](/projects/esp32-morse)
-
-Uses EPS-NOW to connect two ESP32s. Pressing a button on one triggers a vibration on the other, providing a simple way to send and receive Morse code messages.
-
-**Technologies:** Arduino  
-**Status:** Beta | Archived
 
 ---
 
