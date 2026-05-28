@@ -37,4 +37,16 @@
     <loc>https://rh45-one.github.io/projects/esp32-morse/</loc>
     <priority>0.7</priority>
   </url>
+  <url>
+    <loc>https://rh45-one.github.io/projects/flightradius/</loc>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://rh45-one.github.io/hackathons/acc-genai-2025/</loc>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://rh45-one.github.io/hackathons/oracle-sssp-r6/</loc>
+    <priority>0.7</priority>
+  </url>
 </urlset>
