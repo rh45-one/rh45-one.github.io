@@ -16,11 +16,155 @@ let lifeResizeListenerAttached = false;
 let lifeStylesInjected = false;
 const LIFE_CELL_SIZE = 12; // px
 
+// Central projects data cache
+let projectsDataCache = null;
+
+/**
+ * Fetch projects metadata from /data/projects.json
+ * Cached in memory for speed
+ */
+function fetchProjectsData() {
+    if (projectsDataCache) {
+        return Promise.resolve(projectsDataCache);
+    }
+    return fetch('/data/projects.json?cb=' + generateCacheBuster())
+        .then(res => {
+            if (!res.ok) throw new Error('Failed to load projects.json: ' + res.status);
+            return res.json();
+        })
+        .then(data => {
+            projectsDataCache = data;
+            return data;
+        })
+        .catch(err => {
+            console.error('Error fetching projects.json:', err);
+            return [];
+        });
+}
+
+/**
+ * Renders the minimalist tabular ledger on the homepage
+ */
+function renderHomeLedger() {
+    const container = document.getElementById('selected-work-ledger');
+    if (!container) return;
+
+    fetchProjectsData().then(projects => {
+        const homeProjects = projects
+            .filter(p => p.showOnHome)
+            .sort((a, b) => (a.homeOrder || 99) - (b.homeOrder || 99));
+
+        if (homeProjects.length === 0) {
+            container.innerHTML = '<p class="ledger-empty">No featured projects configured.</p>';
+            return;
+        }
+
+        container.innerHTML = homeProjects.map(p => {
+            const tags = (p.tags || []).slice(0, 3).join(', ');
+            return `
+                <a href="${p.path}" class="ledger-row nav-link" data-page="${p.id}">
+                    <span class="ledger-year">${p.year || ''}</span>
+                    <span class="ledger-title">${p.title}</span>
+                    <span class="ledger-desc">${p.description || ''}</span>
+                    <span class="ledger-meta">
+                        <span class="ledger-tags">${tags}</span>
+                        <span class="ledger-arrow">→</span>
+                    </span>
+                </a>
+            `;
+        }).join('');
+
+        setupPjaxNavigation();
+    });
+}
+
+/**
+ * Renders the full categorized directory in /projects/
+ */
+function renderProjectsDirectory() {
+    const container = document.getElementById('projects-directory');
+    if (!container) return;
+
+    fetchProjectsData().then(projects => {
+        if (!projects || projects.length === 0) {
+            container.innerHTML = '<p>No projects found.</p>';
+            return;
+        }
+
+        const countElem = document.getElementById('project-count');
+        if (countElem) {
+            countElem.textContent = `${projects.length} entries`;
+        }
+
+        const groups = {};
+        projects.forEach(p => {
+            const g = p.group || 'Other';
+            if (!groups[g]) groups[g] = [];
+            groups[g].push(p);
+        });
+
+        const groupOrder = ['Software', 'Electronics', 'Hackathons'];
+        const allGroupKeys = Object.keys(groups).sort((a, b) => {
+            const idxA = groupOrder.indexOf(a);
+            const idxB = groupOrder.indexOf(b);
+            if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+            if (idxA !== -1) return -1;
+            if (idxB !== -1) return 1;
+            return a.localeCompare(b);
+        });
+
+        let html = '';
+        allGroupKeys.forEach(groupName => {
+            const groupProjects = groups[groupName].sort((a, b) => (a.listOrder || 99) - (b.listOrder || 99));
+            html += `
+                <div class="category-block">
+                    <div class="category-title">${groupName}</div>
+                    <div class="category-list">
+            `;
+
+            groupProjects.forEach(p => {
+                const tagsHtml = (p.tags || []).map(t => `<span>${t}</span>`).join(' · ');
+                const statusBadge = p.status ? `<span class="project-status">${p.status}</span>` : '';
+                const repoLink = p.repoUrl ? `<a href="${p.repoUrl}" target="_blank" rel="noopener noreferrer">Source ↗</a>` : '';
+                
+                html += `
+                    <div class="project-card">
+                        <div class="project-card-header">
+                            <a href="${p.path}" class="project-card-title nav-link" data-page="${p.id}">${p.title}</a>
+                            ${statusBadge}
+                        </div>
+                        <p class="project-card-desc">${p.description || ''}</p>
+                        <div class="project-card-footer">
+                            <div class="project-card-tags">${tagsHtml}</div>
+                            <div class="project-card-links">
+                                <a href="${p.path}" class="nav-link" data-page="${p.id}">Read Spec / Writeup →</a>
+                                ${repoLink}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += `
+                    </div>
+                </div>
+            `;
+        });
+
+        container.innerHTML = html;
+        setupPjaxNavigation();
+    });
+}
+
 /**
  * Wait for the DOM to be fully loaded before executing any JavaScript
  * This ensures all HTML elements are available for manipulation
  */
 document.addEventListener('DOMContentLoaded', function() {
+    // Render dynamic sections immediately if present
+    renderHomeLedger();
+    renderProjectsDirectory();
+
     // Add version parameter to all CSS links to prevent caching
     document.querySelectorAll('link[rel="stylesheet"]').forEach(link => {
         if (!link.href.includes('?v=')) {
@@ -48,6 +192,8 @@ document.addEventListener('DOMContentLoaded', function() {
         setupSecretButton(); // Call the function once on page load
         setupMobileMenu(); // Setup mobile menu functionality
         setupSubtitleEasterEgg(); // Enable Conway easter egg on subtitle
+        renderHomeLedger(); // Ensure home ledger is populated
+        renderProjectsDirectory(); // Ensure directory is populated
     }, 1000);
 });
 
@@ -411,6 +557,10 @@ function initializeAfterDependencies() {
 
     // Call version checking setup
     setupVersionChecking();
+
+    // Render dynamic sections if present
+    renderHomeLedger();
+    renderProjectsDirectory();
 }
 
 /**
@@ -582,6 +732,9 @@ function setupPjaxNavigation() {
      * Apply click handlers to each link to enable PJAX navigation
      */
     document.querySelectorAll('a[href^="/"]').forEach(link => {
+        if (link.dataset.pjaxBound === 'true') return;
+        link.dataset.pjaxBound = 'true';
+
         link.addEventListener('click', function(e) {
             // Skip PJAX for external links (different hostname)
             if (this.hostname !== window.location.hostname) return;
@@ -605,12 +758,7 @@ function setupPjaxNavigation() {
             
             // Short delay to ensure transition is visible
             setTimeout(() => {
-                // Check if this is a Markdown page
-                if (href === '/projects/' || href === '/projects') {
-                    loadPage(href, true);
-                } else {
-                    loadPage(href, false);
-                }
+                loadPage(href, false);
             }, 50);
         });
     });
@@ -684,15 +832,19 @@ function loadPage(url, isMarkdownPage) {
             if (newContent && currentContent) {
                 currentContent.innerHTML = newContent.innerHTML;
                 
+                // Immediately render dynamic sections if present on loaded page
+                renderHomeLedger();
+                renderProjectsDirectory();
+
                 // Check for markdown content on this page
                 if (markdownUrl) {
                     console.log('Loading markdown from extracted URL:', markdownUrl);
                     loadMarkdownContent(markdownUrl);
                 } 
-                else if (isMarkdownPage || url.includes('/projects')) {
+                else if (isMarkdownPage || (url.includes('/projects') && document.querySelector('.markdown-content'))) {
                     // Determine which markdown file to load based on the URL
-                    if (url.includes('/projects')) {
-                        let mdPath = 'markdown/projects.md';  // This matches the path in the HTML file
+                    if (document.querySelector('.markdown-content')) {
+                        let mdPath = 'markdown/projects.md';  // Fallback if markdown container exists
                         console.log('Loading markdown based on URL path:', mdPath);
                         loadMarkdownContent(mdPath);
                     }
@@ -706,16 +858,6 @@ function loadPage(url, isMarkdownPage) {
             // Update the document title
             document.title = doc.title;
             
-            // Check if we're on the home page and fix any specific structure issues
-            if (url === '/' || url === '/index.html') {
-                // Fix home page specific structure if needed
-                const mainElement = document.querySelector('main');
-                if (mainElement) {
-                    // Ensure main element has correct styles for home page
-                    mainElement.style.textAlign = 'center';
-                }
-            }
-            
             // Highlight current page in navigation
             highlightCurrentPage();
             
@@ -727,10 +869,18 @@ function loadPage(url, isMarkdownPage) {
                 document.body.classList.remove('page-transition');
                 document.body.classList.remove('loading');
                 
-                // Reattach event listeners to new elements on the homepage
-                if (url === '/' || url === '/index.html') {
+                // Reattach event listeners to new elements on the homepage or other pages
+                if (document.getElementById('secret-button')) {
                     setupSecretButton();
+                }
+                if (document.querySelector('.subtitle')) {
                     setupSubtitleEasterEgg();
+                }
+                if (document.getElementById('selected-work-ledger')) {
+                    renderHomeLedger();
+                }
+                if (document.getElementById('projects-directory')) {
+                    renderProjectsDirectory();
                 }
                 
                 // Always setup mobile menu after navigation
@@ -751,6 +901,32 @@ function loadPage(url, isMarkdownPage) {
 }
 
 /**
+ * Updates the terminal prompt logo in the header based on current path
+ * e.g. /home/rh45 on home, /home/rh45/projects on projects
+ */
+function updateLogoPath(customPath) {
+    const logoText = document.querySelector('.logo__text');
+    if (!logoText) return;
+
+    let path = customPath || window.location.pathname;
+    
+    // Normalize path (remove index.html and trailing slashes)
+    if (path.endsWith('/index.html')) {
+        path = path.replace(/\/index\.html$/, '');
+    }
+    if (path.length > 1 && path.endsWith('/')) {
+        path = path.slice(0, -1);
+    }
+
+    if (!path || path === '/' || path === '') {
+        logoText.innerHTML = '/home/rh45';
+    } else {
+        // Appending the path in darker gray
+        logoText.innerHTML = `/home/rh45<span class="logo__path">${path}</span>`;
+    }
+}
+
+/**
  * Highlight the current page link in the navigation
  * This adds the 'active' class to the link that matches the current URL
  */
@@ -758,6 +934,9 @@ function highlightCurrentPage() {
     try {
         // Get the current path from the URL
         const currentPath = window.location.pathname;
+        
+        // Update header logo prompt to reflect current directory
+        updateLogoPath(currentPath);
         
         // Find all navigation links
         const navLinks = document.querySelectorAll('.nav-link');

@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="/main.css" crossorigin="anonymous">  
     <link rel="stylesheet" href="/page-transitions.css">
     <link rel="stylesheet" href="/css/markdown.css">
+    <link rel="stylesheet" href="/css/sober-theme.css">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -25,15 +26,26 @@
         <div class="content">
             <main>
                 <div class="posts">
-                    <!-- This div will be replaced with Markdown content -->
-                    <div class="markdown-content">
-                        <p>Loading content...</p>
+                    <div class="section-header">
+                        <span class="section-title">Project Directory</span>
+                        <span class="section-link" id="project-count"></span>
+                    </div>
+                    <!-- Dynamically populated from /data/projects.json -->
+                    <div id="projects-directory">
+                        <p>Loading projects...</p>
                     </div>
                 </div>
             </main>
         </div>
 
-        <footer class="footer">
+        <footer class="site-footer">
+            <span>© 2026 rh45</span>
+            <div class="footer-links">
+                <a href="https://www.printables.com/@rh45" target="_blank" rel="noopener noreferrer">Printables ↗</a>
+                <a href="https://github.com/rh45-one" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+                <a href="https://www.linkedin.com/in/rh45" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a>
+                <a href="mailto:rh45-one@proton.me">Email ↗</a>
+            </div>
         </footer>
     </div>
 
@@ -43,9 +55,8 @@
     <script src="/bundle.min.63972eebb318ba4bd9f4d416d5f984dd9c689d8f0245717879a6f8e3fb26dc2d976201d764db0163c2fdd5325efdb2f32b79c054159349917c5ae5e7ac92ac25.js" integrity="sha512-Y5cu67MYukvZ9NQW1fmE3ZxonY8CRXF4eab44/sm3C2XYgHXZNsBY8L91TJe/bLzK3nAVBWTSZF8WuXnrJKsJQ=="></script>
     <script src="/script.js"></script>
     <script>
-        // Load markdown content after page is loaded
         document.addEventListener('DOMContentLoaded', function() {
-            loadMarkdownContent('/markdown/projects.md');  // Added leading slash
+            renderProjectsDirectory();
         });
     </script>
 
