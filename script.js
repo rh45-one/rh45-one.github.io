@@ -160,7 +160,7 @@ function renderProjectsDirectory() {
  * Wait for the DOM to be fully loaded before executing any JavaScript
  * This ensures all HTML elements are available for manipulation
  */
-document.addEventListener('DOMContentLoaded', function() {
+function initializeApp() {
     // Render dynamic sections immediately if present
     renderHomeLedger();
     renderProjectsDirectory();
@@ -187,15 +187,21 @@ document.addEventListener('DOMContentLoaded', function() {
     confettiScript.src = 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js';
     document.head.appendChild(confettiScript);
     
-    // Initialize click tracking moved outside setTimeout so it can be reused
+    // Initialize click tracking and dynamic elements
     setTimeout(() => {
         setupSecretButton(); // Call the function once on page load
         setupMobileMenu(); // Setup mobile menu functionality
         setupSubtitleEasterEgg(); // Enable Conway easter egg on subtitle
         renderHomeLedger(); // Ensure home ledger is populated
         renderProjectsDirectory(); // Ensure directory is populated
-    }, 1000);
-});
+    }, 500);
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeApp);
+} else {
+    initializeApp();
+}
 
 /**
  * Setup the secret button functionality
