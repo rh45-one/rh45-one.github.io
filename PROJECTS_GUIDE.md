@@ -43,10 +43,16 @@ Append your project object to the array in `data/projects.json`:
 
 ---
 
-### Step 2: Create the Project Page Folder
+### Step 2: Generate the page
 
-1. Create a folder: `projects/my-new-project`
-2. Copy `projects/template.html` into `projects/my-new-project/index.html`
-3. Edit the title, start date, and README URL in that file.
+From the repo root:
 
-That's it! Both the homepage ledger and the `/projects` directory will automatically update without touching any other files.
+```bash
+python3 scripts/sync-projects.py
+```
+
+That writes `index.html` for every entry in `data/projects.json`, using `projects/template.html`, and deletes any `projects/<slug>/` or `hackathons/<slug>/` folder that is no longer listed. It also refreshes `sitemap.xml`.
+
+Edit `projects/template.html` only when the page layout itself should change, then run the script again.
+
+The homepage ledger and the `/projects` directory read `data/projects.json` in the browser, so they update from that file alone.

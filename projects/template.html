@@ -6,38 +6,30 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>rh45 | Project Title</title>
-    <meta name="description" content="Project description here." />
-    <link rel="stylesheet" href="/main.css" crossorigin="anonymous">  
-    <link rel="stylesheet" href="/page-transitions.css">
+    <title>rh45 | {{TITLE}}</title>
+    <meta name="description" content="{{DESCRIPTION}}" />{{ROBOTS}}
+    <link rel="stylesheet" href="/main.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/page-transitions.css">
     <link rel="stylesheet" href="/css/markdown.css">
     <link rel="stylesheet" href="/css/sober-theme.css">
     <link rel="stylesheet" href="/css/project-meta.css">
     <link rel="shortcut icon" href="/favicon.ico">
 </head>
 <body>
+    <!-- generated from data/projects.json -->
     <div id="header-container"></div>
-    
+
     <div class="container">
         <div class="content">
             <main>
                 <div class="posts">
-                    <!-- Project metadata -->
                     <div class="project-meta">
                         <div class="project-info">
-                            <div class="project-date">
-                                <span>Project started: Date</span>
-                            </div>
-                            <div class="project-repo">
-                                <a href="https://github.com/rh45-one/REPO_NAME" target="_blank" rel="noopener noreferrer">
-                                    <img src="/img/social-logos/GitHub.png" alt="GitHub">
-                                    <span>View on GitHub</span>
-                                </a>
-                            </div>
+                            {{DATE_BLOCK}}
+                            {{REPO_BLOCK}}
                         </div>
                     </div>
 
-                    <!-- Markdown content loaded dynamically from GitHub README -->
                     <div class="markdown-content">
                         <p>Loading content...</p>
                     </div>
@@ -57,13 +49,14 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="/bundle.min.63972eebb318ba4bd9f4d416d5f984dd9c689d8f0245717879a6f8e3fb26dc2d976201d764db0163c2fdd5325efdb2f32b79c054159349917c5ae5e7ac92ac25.js"></script>
+    <script src="/bundle.min.63972eebb318ba4bd9f4d416d5f984dd9c689d8f0245717879a6f8e3fb26dc2d976201d764db0163c2fdd5325efdb2f32b79c054159349917c5ae5e7ac92ac25.js" integrity="sha512-Y5cu67MYukvZ9NQW1fmE3ZxonY8CRXF4eab44/sm3C2XYgHXZNsBY8L91TJe/bLzK3nAVBWTSZF8WuXnrJKsJQ=="></script>
     <script src="/script.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Replace with your raw GitHub README URL
-            loadMarkdownContent('https://raw.githubusercontent.com/rh45-one/REPO_NAME/refs/heads/main/README.md');
+            loadMarkdownContent({{MARKDOWN_URL}});
         });
     </script>
+
+    <script data-collect-dnt="true" async src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
 </body>
 </html>

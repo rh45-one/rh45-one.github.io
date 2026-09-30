@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -7,23 +7,22 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <title>rh45 | ThinkPad Hotkey Fix</title>
-    <meta name="description" content="Fix for modern ThinkPad laptops that remaps the F9-F11 call keys to media control functions (play/pause, previous and next) for better usability." />
-    <link rel="stylesheet" href="/main.css" crossorigin="anonymous">  
-    <link rel="stylesheet" href="/page-transitions.css">
+    <meta name="description" content="Utility for remapping F9-F11 keys on ThinkPad keyboards." />
+    <link rel="stylesheet" href="/main.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/page-transitions.css">
     <link rel="stylesheet" href="/css/markdown.css">
     <link rel="stylesheet" href="/css/sober-theme.css">
     <link rel="stylesheet" href="/css/project-meta.css">
-    
     <link rel="shortcut icon" href="/favicon.ico">
 </head>
 <body>
+    <!-- generated from data/projects.json -->
     <div id="header-container"></div>
-    
+
     <div class="container">
         <div class="content">
             <main>
                 <div class="posts">
-                    <!-- Project metadata - outside the markdown content -->
                     <div class="project-meta">
                         <div class="project-info">
                             <div class="project-date">
@@ -38,7 +37,6 @@
                         </div>
                     </div>
 
-                    <!-- This div will be replaced with Markdown content -->
                     <div class="markdown-content">
                         <p>Loading content...</p>
                     </div>
@@ -57,20 +55,15 @@
         </footer>
     </div>
 
-    <!-- Add the marked.js library for Markdown parsing -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    
     <script src="/bundle.min.63972eebb318ba4bd9f4d416d5f984dd9c689d8f0245717879a6f8e3fb26dc2d976201d764db0163c2fdd5325efdb2f32b79c054159349917c5ae5e7ac92ac25.js" integrity="sha512-Y5cu67MYukvZ9NQW1fmE3ZxonY8CRXF4eab44/sm3C2XYgHXZNsBY8L91TJe/bLzK3nAVBWTSZF8WuXnrJKsJQ=="></script>
     <script src="/script.js"></script>
     <script>
-        // Load markdown content after page is loaded
         document.addEventListener('DOMContentLoaded', function() {
-            loadMarkdownContent('https://raw.githubusercontent.com/rh45-one/ThinkPad-Hotkey-Fix/refs/heads/main/README.md');  // Added leading slash
+            loadMarkdownContent("https://raw.githubusercontent.com/rh45-one/ThinkPad-Hotkey-Fix/refs/heads/main/README.md");
         });
     </script>
 
-    <!-- 100% privacy-first analytics -->
     <script data-collect-dnt="true" async src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
-
 </body>
 </html>

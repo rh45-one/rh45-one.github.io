@@ -46,7 +46,7 @@
     "listOrder": 1,
     "tags": ["Serial/TTY", "Soldering", "Hardware"],
     "year": "2025",
-    "startDate": "2025",
+    "startDate": "April 2023",
     "endDate": "2025",
     "status": "Completed"
   },
@@ -63,7 +63,7 @@
     "listOrder": 3,
     "tags": ["JavaScript", "Bash", "Linux"],
     "year": "2025",
-    "startDate": "2025",
+    "startDate": "May 2024",
     "endDate": "2025",
     "status": "Completed"
   },
@@ -80,7 +80,7 @@
     "listOrder": 4,
     "tags": ["JavaScript", "Bash", "Extension"],
     "year": "2024",
-    "startDate": "2024",
+    "startDate": "March 2025",
     "endDate": null,
     "status": "Active"
   },
@@ -116,7 +116,8 @@
     "year": "2022",
     "startDate": "April 2022",
     "endDate": "2022",
-    "status": "Completed"
+    "status": "Completed",
+    "noindex": true
   },
   {
     "id": "hackspain26",
@@ -148,7 +149,7 @@
     "listOrder": 2,
     "tags": ["Python", "Ollama", "React", "GenAI"],
     "year": "2025",
-    "startDate": "2025",
+    "startDate": "November 2025",
     "endDate": "2025",
     "status": "Completed (Demo)"
   },
@@ -165,7 +166,7 @@
     "listOrder": 3,
     "tags": ["Python", "Machine Learning", "Jupyter"],
     "year": "2024",
-    "startDate": "2024",
+    "startDate": "May 2025",
     "endDate": "2024",
     "status": "Completed"
   }
