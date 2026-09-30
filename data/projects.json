@@ -127,7 +127,7 @@
     "path": "/projects/hackspain26",
     "markdownUrl": "https://raw.githubusercontent.com/rh45-one/hackspain-kermit-prosper/refs/heads/main/README.md",
     "repoUrl": "https://github.com/rh45-one/hackspain-kermit-prosper",
-    "showOnHome": true,
+    "showOnHome": false,
     "homeOrder": 11,
     "listOrder": 1,
     "tags": ["Python", "TypeScript", "JavaScript", "Next.js"],
