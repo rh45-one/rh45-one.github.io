@@ -3,6 +3,10 @@
 
 Each entry gets an index.html rendered from projects/template.html.
 Folders under projects/ and hackathons/ that are no longer listed are removed.
+
+An entry with "redirect" is only a link. No page is generated for it, and
+repoUrl is ignored. That keeps a same-domain GitHub Pages project, such as
+/MineMaps, from being replaced by a README writeup in this repo.
 """
 
 import html
@@ -20,6 +24,8 @@ SITE_ORIGIN = "https://hrgsen.one"
 
 MANAGED_ROOTS = ("projects", "hackathons")
 SLUG = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
+REDIRECT_PATH = re.compile(r"^/[A-Za-z0-9][A-Za-z0-9._-]*$")
+RESERVED_REDIRECTS = {"/projects", "/hackathons"}
 
 DATE_BLOCK = """<div class="project-date">
                                 <span>Project started: {date}</span>
@@ -38,6 +44,31 @@ def fail(message):
     sys.exit(1)
 
 
+def normalize_redirect(project, index):
+    raw = project.get("redirect")
+    if raw is None or raw == "":
+        return None
+    label = project.get("id", index)
+    if not isinstance(raw, str):
+        fail(f"{label} redirect must be a string")
+
+    value = raw.strip()
+    if value.startswith(("http://", "https://")):
+        return value
+
+    value = value.rstrip("/")
+    if not REDIRECT_PATH.match(value) or value.lower() in RESERVED_REDIRECTS:
+        fail(
+            f"{label} redirect {raw!r} must be a first-level path like /MineMaps "
+            "or an absolute http(s) URL"
+        )
+    return value
+
+
+def publishes_page(project):
+    return not project.get("redirect")
+
+
 def load_projects():
     try:
         projects = json.loads(DATA_PATH.read_text(encoding="utf-8"))
@@ -49,11 +80,24 @@ def load_projects():
     if not isinstance(projects, list):
         fail("data/projects.json must be an array")
 
-    seen = set()
+    seen_paths = set()
+    seen_redirects = set()
     for index, project in enumerate(projects):
         if not isinstance(project, dict):
             fail(f"entry {index} is not an object")
-        for key in ("id", "title", "path", "markdownUrl"):
+        for key in ("id", "title"):
+            if not project.get(key):
+                fail(f"entry {index} ({project.get('id', '?')}) is missing {key}")
+
+        redirect = normalize_redirect(project, index)
+        if redirect:
+            if redirect in seen_redirects:
+                fail(f"duplicate redirect {redirect}")
+            seen_redirects.add(redirect)
+            project["redirect"] = redirect
+            continue
+
+        for key in ("path", "markdownUrl"):
             if not project.get(key):
                 fail(f"entry {index} ({project.get('id', '?')}) is missing {key}")
 
@@ -64,9 +108,9 @@ def load_projects():
                 f"{project['id']} has path {path!r}; "
                 "expected /projects/<slug> or /hackathons/<slug>"
             )
-        if path in seen:
+        if path in seen_paths:
             fail(f"duplicate path {path}")
-        seen.add(path)
+        seen_paths.add(path)
 
     return projects
 
@@ -115,6 +159,8 @@ def sync_pages(projects, template):
     created, updated, unchanged = [], [], []
 
     for project in projects:
+        if not publishes_page(project):
+            continue
         destination = page_path(project)
         destination.parent.mkdir(parents=True, exist_ok=True)
         rendered = render(project, template)
@@ -133,7 +179,11 @@ def sync_pages(projects, template):
 
 
 def sync_deletions(projects):
-    wanted = {project["path"].strip("/") for project in projects}
+    wanted = {
+        project["path"].strip("/")
+        for project in projects
+        if publishes_page(project)
+    }
     deleted = []
 
     for root_name in MANAGED_ROOTS:
@@ -167,7 +217,7 @@ def sync_sitemap(projects):
         f"{SITE_ORIGIN}/projects/",
     ]
     for project in projects:
-        if project.get("noindex"):
+        if not publishes_page(project) or project.get("noindex"):
             continue
         locs.append(f"{SITE_ORIGIN}{project['path'].rstrip('/')}/")
 
@@ -198,17 +248,37 @@ def sync_sitemap(projects):
     return False
 
 
+def warn_redirect_collisions(projects):
+    for project in projects:
+        redirect = project.get("redirect") or ""
+        if not redirect.startswith("/") or redirect.startswith("//"):
+            continue
+        segment = redirect.strip("/").split("/")[0]
+        candidate = ROOT / segment
+        if candidate.exists():
+            print(
+                f"warning: {candidate.relative_to(ROOT)} is in this repo and "
+                f"uses the same URL as {project['id']} ({redirect})",
+                file=sys.stderr,
+            )
+
+
 def main():
     if not TEMPLATE_PATH.is_file():
         fail(f"missing {TEMPLATE_PATH.relative_to(ROOT)}")
 
     projects = load_projects()
     template = TEMPLATE_PATH.read_text(encoding="utf-8")
+    warn_redirect_collisions(projects)
     created, updated, unchanged = sync_pages(projects, template)
     deleted = sync_deletions(projects)
     sitemap_changed = sync_sitemap(projects)
 
+    redirects = [project for project in projects if project.get("redirect")]
     print(f"projects in JSON: {len(projects)}")
+    print(f"redirects (no page generated): {len(redirects)}")
+    for project in redirects:
+        print(f"  → {project['id']} {project['redirect']}")
     print(f"created: {len(created)}")
     for path in created:
         print(f"  + {path}")

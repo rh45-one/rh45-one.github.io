@@ -19,6 +19,59 @@ const LIFE_CELL_SIZE = 12; // px
 // Central projects data cache
 let projectsDataCache = null;
 
+const PROJECT_MONTHS = {
+    january: 1,
+    february: 2,
+    march: 3,
+    april: 4,
+    may: 5,
+    june: 6,
+    july: 7,
+    august: 8,
+    september: 9,
+    october: 10,
+    november: 11,
+    december: 12
+};
+
+function escapeAttr(value) {
+    return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/"/g, '&quot;')
+        .replace(/</g, '&lt;');
+}
+
+/** Newest first. startDate ("March 2026") outranks a bare year. */
+function projectRecency(project) {
+    const raw = String(project.startDate || project.year || '').trim();
+    const named = raw.match(/^([A-Za-z]+)\s+(\d{4})$/);
+    if (named) {
+        const month = PROJECT_MONTHS[named[1].toLowerCase()] || 0;
+        return Number(named[2]) * 12 + month;
+    }
+    const year = raw.match(/(\d{4})/);
+    return year ? Number(year[1]) * 12 : 0;
+}
+
+function compareNewestFirst(a, b, tieKey) {
+    const byDate = projectRecency(b) - projectRecency(a);
+    if (byDate !== 0) return byDate;
+    return (a[tieKey] || 99) - (b[tieKey] || 99);
+}
+
+function projectHref(project) {
+    return project.redirect || project.path || '#';
+}
+
+function projectAnchor(project, className, innerHtml) {
+    const classes = [className, project.redirect ? '' : 'nav-link'].filter(Boolean).join(' ');
+    const classAttr = classes ? ` class="${classes}"` : '';
+    const extra = project.redirect
+        ? ' data-no-pjax'
+        : ` data-page="${escapeAttr(project.id)}"`;
+    return `<a href="${escapeAttr(projectHref(project))}"${classAttr}${extra}>${innerHtml}</a>`;
+}
+
 /**
  * Fetch projects metadata from /data/projects.json
  * Cached in memory for speed
@@ -50,9 +103,14 @@ function renderHomeLedger() {
     if (!container) return;
 
     fetchProjectsData().then(projects => {
+        const countLink = container.closest('.ledger-section')?.querySelector('.section-link');
+        if (countLink && projects.length) {
+            countLink.textContent = `All Projects (${projects.length}) →`;
+        }
+
         const homeProjects = projects
             .filter(p => p.showOnHome)
-            .sort((a, b) => (a.homeOrder || 99) - (b.homeOrder || 99));
+            .sort((a, b) => compareNewestFirst(a, b, 'homeOrder'));
 
         if (homeProjects.length === 0) {
             container.innerHTML = '<p class="ledger-empty">No featured projects configured.</p>';
@@ -61,8 +119,7 @@ function renderHomeLedger() {
 
         container.innerHTML = homeProjects.map(p => {
             const tags = (p.tags || []).slice(0, 3).join(', ');
-            return `
-                <a href="${p.path}" class="ledger-row nav-link" data-page="${p.id}">
+            return projectAnchor(p, 'ledger-row', `
                     <span class="ledger-year">${p.year || ''}</span>
                     <span class="ledger-title">${p.title}</span>
                     <span class="ledger-desc">${p.description || ''}</span>
@@ -70,8 +127,7 @@ function renderHomeLedger() {
                         <span class="ledger-tags">${tags}</span>
                         <span class="ledger-arrow">→</span>
                     </span>
-                </a>
-            `;
+            `);
         }).join('');
 
         setupPjaxNavigation();
@@ -115,7 +171,7 @@ function renderProjectsDirectory() {
 
         let html = '';
         allGroupKeys.forEach(groupName => {
-            const groupProjects = groups[groupName].sort((a, b) => (a.listOrder || 99) - (b.listOrder || 99));
+            const groupProjects = groups[groupName].sort((a, b) => compareNewestFirst(a, b, 'listOrder'));
             html += `
                 <div class="category-block">
                     <div class="category-title">${groupName}</div>
@@ -125,19 +181,22 @@ function renderProjectsDirectory() {
             groupProjects.forEach(p => {
                 const tagsHtml = (p.tags || []).map(t => `<span>${t}</span>`).join(' · ');
                 const statusBadge = p.status ? `<span class="project-status">${p.status}</span>` : '';
-                const repoLink = p.repoUrl ? `<a href="${p.repoUrl}" target="_blank" rel="noopener noreferrer">Source ↗</a>` : '';
-                
+                const repoLink = (!p.redirect && p.repoUrl)
+                    ? `<a href="${escapeAttr(p.repoUrl)}" target="_blank" rel="noopener noreferrer">Source ↗</a>`
+                    : '';
+                const actionLabel = p.redirect ? 'Open site →' : 'Read Spec / Writeup →';
+
                 html += `
                     <div class="project-card">
                         <div class="project-card-header">
-                            <a href="${p.path}" class="project-card-title nav-link" data-page="${p.id}">${p.title}</a>
+                            ${projectAnchor(p, 'project-card-title', p.title)}
                             ${statusBadge}
                         </div>
                         <p class="project-card-desc">${p.description || ''}</p>
                         <div class="project-card-footer">
                             <div class="project-card-tags">${tagsHtml}</div>
                             <div class="project-card-links">
-                                <a href="${p.path}" class="nav-link" data-page="${p.id}">Read Spec / Writeup →</a>
+                                ${projectAnchor(p, '', actionLabel)}
                                 ${repoLink}
                             </div>
                         </div>
@@ -739,6 +798,7 @@ function setupPjaxNavigation() {
      */
     document.querySelectorAll('a[href^="/"]').forEach(link => {
         if (link.dataset.pjaxBound === 'true') return;
+        if (link.hasAttribute('data-no-pjax')) return;
         link.dataset.pjaxBound = 'true';
 
         link.addEventListener('click', function(e) {
