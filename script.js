@@ -63,6 +63,25 @@ function projectHref(project) {
     return project.redirect || project.path || '#';
 }
 
+let redirectNavigationBound = false;
+
+/** Redirect links must leave this site. The in-page loader must not handle them. */
+function bindRedirectNavigation() {
+    if (redirectNavigationBound) return;
+    redirectNavigationBound = true;
+
+    document.addEventListener('click', function (event) {
+        if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+        const link = event.target && event.target.closest
+            ? event.target.closest('a[data-no-pjax]')
+            : null;
+        if (!link || !link.href) return;
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        window.location.assign(link.href);
+    }, true);
+}
+
 function projectAnchor(project, className, innerHtml) {
     const classes = [className, project.redirect ? '' : 'nav-link'].filter(Boolean).join(' ');
     const classAttr = classes ? ` class="${classes}"` : '';
@@ -220,6 +239,8 @@ function renderProjectsDirectory() {
  * This ensures all HTML elements are available for manipulation
  */
 function initializeApp() {
+    bindRedirectNavigation();
+
     // Render dynamic sections immediately if present
     renderHomeLedger();
     renderProjectsDirectory();
@@ -792,6 +813,8 @@ function applyMarkdownStyling(container) {
  * PJAX updates only the necessary parts of the page while maintaining state
  */
 function setupPjaxNavigation() {
+    bindRedirectNavigation();
+
     /**
      * Find all internal links (starting with /) in the document
      * Apply click handlers to each link to enable PJAX navigation
@@ -802,6 +825,8 @@ function setupPjaxNavigation() {
         link.dataset.pjaxBound = 'true';
 
         link.addEventListener('click', function(e) {
+            if (this.hasAttribute('data-no-pjax')) return;
+
             // Skip PJAX for external links (different hostname)
             if (this.hostname !== window.location.hostname) return;
             

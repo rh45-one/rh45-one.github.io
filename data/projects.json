@@ -4,7 +4,7 @@
     "title": "MineMaps",
     "description": "Minecraft-style real-world map for Android phones and Android Auto.",
     "group": "Software",
-    "redirect": "/MineMaps",
+    "redirect": "/MineMaps/",
     "showOnHome": true,
     "homeOrder": 1,
     "listOrder": 1,
