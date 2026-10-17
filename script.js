@@ -729,34 +729,24 @@ function loadMarkdownContent(markdownPath) {
         });
 }
 
+function ensureStylesheet(href) {
+    const present = Array.from(document.querySelectorAll('link[rel="stylesheet"]')).some(link => {
+        const path = (link.getAttribute('href') || '').split('?')[0];
+        return path === href || path.endsWith(href);
+    });
+    if (present) return;
+
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = href + '?v=' + generateCacheBuster();
+    document.head.appendChild(link);
+}
+
 /**
  * Ensures that the markdown CSS file is loaded
  */
 function ensureMarkdownCssIsLoaded() {
-    const markdownCssPath = '/css/markdown.css';
-    
-    // Check if the CSS is already loaded
-    const isCssLoaded = Array.from(document.styleSheets).some(sheet => {
-        return sheet.href && sheet.href.includes('markdown.css');
-    });
-    
-    // If not loaded, add it dynamically
-    if (!isCssLoaded) {
-        console.log('Adding markdown CSS to document');
-        const link = document.createElement('link');
-        link.rel = 'stylesheet';
-        link.href = markdownCssPath + '?v=' + generateCacheBuster();
-        document.head.appendChild(link);
-    } else {
-        // Reload it with a new cache buster
-        const existingLinks = document.querySelectorAll('link[href*="markdown.css"]');
-        existingLinks.forEach(link => {
-            const newHref = markdownCssPath + '?v=' + generateCacheBuster();
-            if (link.href !== newHref) {
-                link.href = newHref;
-            }
-        });
-    }
+    ensureStylesheet('/css/markdown.css');
 }
 
 /**
@@ -922,6 +912,10 @@ function loadPage(url, isMarkdownPage) {
             // Replace only the inner HTML of the content area to preserve structure
             if (newContent && currentContent) {
                 currentContent.innerHTML = newContent.innerHTML;
+
+                if (currentContent.querySelector('.project-meta')) {
+                    ensureStylesheet('/css/project-meta.css');
+                }
                 
                 // Immediately render dynamic sections if present on loaded page
                 renderHomeLedger();
